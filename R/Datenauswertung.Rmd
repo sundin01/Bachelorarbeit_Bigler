@@ -3,5 +3,604 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+
+```{r activate_packages}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r read_the_files}
+# Check the path
+getwd()
+
+# Read all the files [location and time span]
+Montezuma.1920.1930 <- read.delim("../Data/Montezuma.txt")
+
+Harqua_Hala.1920.1925 <- 
+  read.delim("../Data/Harqua_Hala.txt")
+
+Mt.Wilson.1.1905.1920 <- 
+  read.delim("../Data/Mt_Wilson_1.txt")
+
+Mt.Wilson.2.1905.1906 <- 
+  read.delim("../Data/Mt_Wilson_2.txt")
+
+Mt.Wilson.3.1909.1912 <- 
+  read.delim("../Data/Mt_Wilson_3.txt")
+
+Washington.1902.1904 <- 
+  read.delim("../Data/Washington_1.txt")
+
+Washington.1903.1907 <- 
+  read.delim("../Data/Washington_2.txt")
+
+Bassour.1911.1912 <- 
+  read.delim("../Data//Bassour.txt")
+
+Hump_Mountain.1917.1918 <- 
+  read.delim("../Data/Hump_Mountain.txt")
+
+Calama.1918.1920 <- 
+  read.delim("../Data/Calama.txt")
+
+Mounth.Whitney.1909.1910 <- 
+  read.delim("../Data/Mounth_Whitney.txt")
+
+Mt.Brukkaros.1926.1930 <- 
+  read.delim("../Data//Mt_Brukkaros.txt")
+
+Table.mountain.1925.1930 <- 
+  read.delim("../Data//Table_mountain.txt")
+```
+
 Data Analysis
+
+```{r coordinates transformation}
+#function to transform to Cartesian coordinates
+coordinates.transfomation <- function(degree, minutes, seconds){
+  lat <- (((seconds / 60) + minutes ) / 60) + degree
+  return(lat)
+}
+
+Katmai.lat <- coordinates.transfomation(58, 16, 43)
+Katmai.lon <- coordinates.transfomation(-154, -57, -24.9)
+
+Santa.Maria.lat <- coordinates.transfomation(14, 45, 20)
+Santa.Maria.lon <- coordinates.transfomation(-91, -33, -6)
+
+Montezuma.lat <- coordinates.transfomation(-22, -40, -0)
+Montezuma.lon <- coordinates.transfomation(-68, -56, -0)
+
+Calama.lat <- coordinates.transfomation(-22, -28, -0)
+Calama.lon <- coordinates.transfomation(-68, -56, -0)
+
+Table.Mountain.lat <- coordinates.transfomation(34, 22, 0)
+Table.Mountain.lon <- coordinates.transfomation(-117, -41, -0)
+
+Harqua.Hala.lat <- coordinates.transfomation(33, 48, 0)
+Harqua.Hala.lon <- coordinates.transfomation(-113, -20, 0)
+
+Mount.Brukkaros.lat <- coordinates.transfomation(-25, -52, -0)
+Mount.Brukkoras.lon <- coordinates.transfomation(17, 48, 0)
+
+Mount.Whitney.lat <- coordinates.transfomation(36, 34, 44)
+Mount.Whitney.lon <- coordinates.transfomation(-118, -17, -29)
+
+Mount.Wilson.lat <- coordinates.transfomation(34, 12, 55)
+Mount.Wilson.lon <- coordinates.transfomation(-118, -17, -29)
+
+Washington.lat <- coordinates.transfomation(38, 53, 17.3)
+Washingtons.lon <- coordinates.transfomation(-77, -01, -33.6)
+
+Hump.Mountain.lat <- coordinates.transfomation(36, 8, 0)
+Hump.Mountain.lon <- coordinates.transfomation(-82, 0, 0)
+
+Bassour.lat <- coordinates.transfomation(36, 13, 0)
+Bassour.lon <- coordinates.transfomation(2, 51, 30)
+```
+
+```{r}
+#create a data tibble
+df.locations <- tibble("Location" = 
+                         c("Katmai", "Santa Maria", "Montezuma", 
+                           "Calama", "Table Mountain", "Harqua Hala",
+                           "Mt. Brukkaros","Mt. Whitney", "Mt. Wilson", 
+                           "Washington","Hump Mountain", "Bassour"), 
+                       "latitude" =  
+                         c(Katmai.lat, Santa.Maria.lat, Montezuma.lat, 
+                           Calama.lat, Table.Mountain.lat, Harqua.Hala.lat, 
+                           Mount.Brukkaros.lat,Mount.Whitney.lat, 
+                           Mount.Wilson.lat, Washington.lat,
+                           Hump.Mountain.lat, Bassour.lat),
+                       "longitude" = 
+                         c(Katmai.lon, Santa.Maria.lon, Montezuma.lon, 
+                           Calama.lon, Table.Mountain.lon, Harqua.Hala.lon, 
+                           Mount.Brukkoras.lon, Mount.Whitney.lon, 
+                           Mount.Wilson.lon, Washingtons.lon,
+                           Hump.Mountain.lon, Bassour.lon),
+                       "Altitude" = 
+                         c(2047, 3772, 2711, 2250, 2286, 1721, 
+                           1586, 4420, 1727, 10, 2250, 1160),
+                       "Legend" = 
+                        c(rep("Volcano",2), rep("Measuring station", 10)))
+```
+
+```{r Overview_location}
+#read the world map
+world_map <- map_data("world")
+
+ggplot() +
+  geom_map(data = world_map, map = world_map,
+    aes(long, lat, map_id = region),
+    color = "white", fill = "lightgray", size = 0.1) +
+  geom_point(data = df.locations, aes(x = `longitude`, y = `latitude`,
+             color = Legend), size = 0.5) +
+  scale_y_continuous(limits = c(-80, 80)) +
+  scale_x_continuous(limits = c(-180, 180)) +
+  labs(title = "Distribution of the measurment locations",
+       x = "Longitude [deg]", 
+       y = "Latitude [deg]") +
+  theme_bw() +
+  theme(legend.background = 
+          element_rect(fill="white",
+          size=0.5, linetype="solid", colour ="black")) +
+  theme(legend.position = c(.98, .965),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6))  +
+  theme(panel.border = 
+          element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+Santa Maria-eruption
+
+24.oktober 1902
+
+```{r files_for_santa_maria}
+#Change all missing values (-999) with NA
+ Washington.1902.1904 <- Washington.1902.1904|>
+  mutate(across(where(is.numeric), ~na_if(. , -999))) |>
+  rename("λ_400nm" = lambda1...m., 
+         "λ_450nm" = lambda2...m.,
+         "λ_500nm" = lambda3...m.,
+         "λ_600nm" = lambda4...m.,
+         "λ_700nm" = lambda5...m.,
+         "λ_800nm" = lambda6...m.,
+         "λ_900nm" = lambda7...m.,
+         "λ_1000nm" = lambda8...m.,
+         "λ_1200nm" = lambda9...m.,
+         "λ_1600nm" = lambda10...m.,
+         "trans_by_400nm" = transmission1....100.,
+         "trans_by_450nm" = transmission2....100.,
+         "trans_by_500nm" = transmission3....100.,
+         "trans_by_600nm" = transmission4....100.,
+         "trans_by_700nm" = transmission5....100.,
+         "trans_by_800nm" = transmission6....100.,
+         "trans_by_900nm" = transmission7....100.,
+         "trans_by_1000nm" = transmission8....100.,
+         "trans_by_1200nm" = transmission9....100.,
+         "trans_by_1600nm" = transmission10....100.) |>
+  mutate(Date = dmy(paste(day,month,year))) |>
+  select("Date", "year", 
+         "λ_400nm", "trans_by_400nm", 
+         "λ_450nm", "trans_by_450nm",
+         "λ_500nm", "trans_by_500nm",
+         "λ_600nm", "trans_by_600nm",
+         "λ_700nm", "trans_by_700nm", 
+         "λ_800nm", "trans_by_800nm",
+         "λ_900nm", "trans_by_900nm", 
+         "λ_1000nm", "trans_by_1000nm",
+         "λ_1200nm", "trans_by_1200nm",
+         "λ_1600nm", "trans_by_1600nm")
+
+Washington.1903.1907 <- Washington.1903.1907|>
+  mutate(across(where(is.numeric), ~na_if(. , -999))) |>
+  rename("λ_400nm" = lambda1...m., 
+         "λ_450nm" = lambda2...m.,
+         "λ_500nm" = lambda3...m.,
+         "λ_600nm" = lambda4...m.,
+         "λ_700nm" = lambda5...m.,
+         "λ_800nm" = lambda6...m.,
+         "λ_900nm" = lambda7...m.,
+         "λ_1000nm" = lambda8...m.,
+         "λ_1200nm" = lambda9...m.,
+         "λ_1600nm" = lambda10...m.,
+         "trans_by_400nm" = transmission1....100.,
+         "trans_by_450nm" = transmission2....100.,
+         "trans_by_500nm" = transmission3....100.,
+         "trans_by_600nm" = transmission4....100.,
+         "trans_by_700nm" = transmission5....100.,
+         "trans_by_800nm" = transmission6....100.,
+         "trans_by_900nm" = transmission7....100.,
+         "trans_by_1000nm" = transmission8....100.,
+         "trans_by_1200nm" = transmission9....100.,
+         "trans_by_1600nm" = transmission10....100.) |>
+  mutate(Date = dmy(paste(day,month,year))) |>
+  select("Date", "year", 
+         "λ_400nm", "trans_by_400nm", 
+         "λ_450nm", "trans_by_450nm",
+         "λ_500nm", "trans_by_500nm",
+         "λ_600nm", "trans_by_600nm",
+         "λ_700nm", "trans_by_700nm", 
+         "λ_800nm", "trans_by_800nm",
+         "λ_900nm", "trans_by_900nm", 
+         "λ_1000nm", "trans_by_1000nm",
+         "λ_1200nm", "trans_by_1200nm",
+         "λ_1600nm", "trans_by_1600nm")
+```
+
+```{r}
+ggplot(Washington.1902.1904, aes(x = `year`)) +
+  geom_bar(width = 0.5, fill = "grey",
+           color = "black", alpha = 0.5) +
+  geom_text(aes(label = ..count..), 
+            stat = "count", vjust = 1.5, colour = "black") +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1)) +
+  labs(title = "Frequency of measurements of the solar radiation",
+       subtitle = "Washington (38.8881 N, 77.026 W, 10 m)",
+       x = "Year", 
+       y = "Frequency") +
+  theme_bw() +
+  theme(panel.border = 
+          element_rect(colour = "black", fill = NA, linewidth = 1))
+
+ggplot(Washington.1903.1907, aes(x = `year`)) +
+  geom_bar(width = 0.5, fill = "grey",
+           color = "black", alpha = 0.5) +
+  geom_text(aes(label = ..count..), 
+            stat = "count", vjust = 1.5, colour = "black") +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1)) +
+  labs(title = "Frequency of measurements of the solar radiation",
+       subtitle = "Washington (38.8881 N, 77.026 W, 10 m)",
+       x = "Year", 
+       y = "Frequency") +
+  theme_bw() +
+  theme(panel.border = 
+          element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+Katmai-eruption
+
+6-8. Juni 1912
+
+```{r files_for_katmai_Bassour}
+Bassour.1911.1912 <- Bassour.1911.1912 |>
+  mutate(across(where(is.numeric), ~na_if(. , -999))) |>
+  rename("λ_400nm" = lambda1...m., 
+         "λ_450nm" = lambda2...m.,
+         "λ_500nm" = lambda3...m.,
+         "λ_600nm" = lambda4...m.,
+         "λ_700nm" = lambda5...m.,
+         "λ_800nm" = lambda6...m.,
+         "λ_900nm" = lambda7...m.,
+         "λ_1000nm" = lambda8...m.,
+         "λ_1200nm" = lambda9...m.,
+         "λ_1600nm" = lambda10...m.,
+         "trans_by_400nm" = transmission1....100.,
+         "trans_by_450nm" = transmission2....100.,
+         "trans_by_500nm" = transmission3....100.,
+         "trans_by_600nm" = transmission4....100.,
+         "trans_by_700nm" = transmission5....100.,
+         "trans_by_800nm" = transmission6....100.,
+         "trans_by_900nm" = transmission7....100.,
+         "trans_by_1000nm" = transmission8....100.,
+         "trans_by_1200nm" = transmission9....100.,
+         "trans_by_1600nm" = transmission10....100.) |>
+  mutate(Date = dmy(paste(day,month,year))) |>
+  select("Date", "year", 
+         "λ_400nm", "trans_by_400nm",
+         "λ_450nm",  "trans_by_450nm",
+         "λ_500nm", "trans_by_500nm", 
+         "λ_600nm", "trans_by_600nm",
+         "λ_700nm", "trans_by_700nm",
+         "λ_800nm", "trans_by_800nm",
+         "λ_900nm", "trans_by_900nm", 
+         "λ_1000nm", "trans_by_1000nm",
+         "λ_1200nm", "trans_by_1200nm", 
+         "λ_1600nm", "trans_by_1600nm")
+```
+
+```{r}
+ggplot(Bassour.1911.1912, aes(x = `year`)) +
+  geom_bar(width = 0.5, fill = "grey",
+           color = "black", alpha = 0.5) +
+  geom_text(aes(label = ..count..), 
+            stat = "count", vjust = 1.5, colour = "black") +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1)) +
+  labs(title = "Frequency of measurements of the solar radiation",
+       subtitle = "Bassour (36.21670 N, 2.85833 E, 1160 m)",
+       x = "Year", 
+       y = "Frequency") +
+  theme_bw() +
+  theme(panel.border =
+          element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+```{r files_for_katmai_Mt_Wilson}
+#for 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1200, 1600 nano meter
+Mt.Wilson.350 <- Mt.Wilson.1.1905.1920 |>
+  mutate(across(where(is.numeric), ~na_if(. , -999))) |>
+  group_by(year) |>
+  filter(lambda1...m. == 0.35)|>
+  rename("λ_350nm" = lambda1...m., 
+         "λ_400nm" = lambda2...m.,
+         "λ_450nm" = lambda3...m.,
+         "λ_500nm" = lambda4...m.,
+         "λ_600nm" = lambda5...m.,
+         "λ_700nm" = lambda6...m.,
+         "λ_800nm" = lambda7...m.,
+         "λ_900nm" = lambda8...m.,
+         "λ_1000nm" = lambda9...m.,
+         "λ_1200nm" = lambda10...m.,
+         "λ_1600nm" = lambda11...m.,
+         "trans_by_350nm" = transmission1....100.,
+         "trans_by_400nm" = transmission2....100.,
+         "trans_by_450nm" = transmission3....100.,
+         "trans_by_500nm" = transmission4....100.,
+         "trans_by_600nm" = transmission5....100.,
+         "trans_by_700nm" = transmission6....100.,
+         "trans_by_800nm" = transmission7....100.,
+         "trans_by_900nm" = transmission8....100.,
+         "trans_by_1000nm" = transmission9....100.,
+         "trans_by_1200nm" = transmission10....100.,
+         "trans_by_1600nm" = transmission11....100.) |>
+  mutate(Date = dmy(paste(day,month,year))) |>
+  select("Date", "year", 
+         "λ_350nm", "trans_by_350nm",
+         "λ_400nm", "trans_by_400nm",
+         "λ_450nm", "trans_by_450nm",
+         "λ_500nm", "trans_by_500nm", 
+         "λ_600nm", "trans_by_600nm",
+         "λ_700nm", "trans_by_700nm", 
+         "λ_800nm", "trans_by_800nm",
+         "λ_900nm", "trans_by_900nm",
+         "λ_1000nm", "trans_by_1000nm",
+         "λ_1200nm", "trans_by_1200nm", 
+         "λ_1600nm", "trans_by_1600nm")
+   
+#correction in the data
+Mt.Wilson.350[673,16] <- 0.934
+
+Mt.Wilson.350[81,20] <- 0.952
+
+Mt.Wilson.350[162,24] <- 0.962
+```
+
+```{r}
+ggplot(Mt.Wilson.350, aes(x = `year`)) +
+  geom_bar(width = 0.5, fill = "grey",
+           color = "black", alpha = 0.5) +
+  geom_text(aes(label = ..count..), 
+            stat = "count", vjust = 1.5, colour = "black") +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1)) +
+  labs(title = "Frequency of measurements of the solar radiation",
+       subtitle = "Mt. Wilson (34.2153 N, 118.059 W, 1725m) ",
+       x = "Year", 
+       y = "Frequency") +
+  theme_bw() +
+  theme(panel.border = 
+          element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+The scattering and absorption of radiation by gas molecules and aerosols all contibute to the extinction of the solar and terrestrial radiation passing through the atmosphere. Each of these contributions is linearly proportional to (1) the intensity of the radiation at the point along the ray path, (2) the local concentration of the gases and / or particles that are responsible for the absorption and scattering and (3) the effectiveness of the absorbers or scattering.
+
+A first estimate for transmittance:
+
+change from degree to radiant:
+
+$$ \frac{\alpha^°}{180} = \frac{\alpha^{rad}}{\pi}$$
+
+particular angle for particular dates for the sun elevation:
+
+21.3 and 23.9 --\> 0° (equator)
+
+21.6 --\> 23.5°N
+
+21.12 --\> 23.5°S
+
+Latitude correction (only a simplification):
+
+$$(90° - Latitude) ± 23.5°$$
+
+```{r}
+
+#function for theoretical calculation
+transmittance <- function(vect, grad){
+  vec <- c()
+  rad <- (grad * pi) / 180 
+  for (i in vect) {
+    value <- exp(-(0.0084/ (sin(rad)*i^4)))
+    vec <- c(vec, value)
+  }
+  return(vec)
+}
+
+# Calculate some theoretical values
+
+# Create a sequenze with wavelenth between 0.1nm and 1.6nm
+wavelenghts <- seq(from = 0.1, to = 1.6, by = 0.02)
+#sun elevation at 21.6
+theoretical.values.32 <- transmittance(wavelenghts, 32.29)
+#sun elevation at 21.12
+theoretical.values.79 <- transmittance(wavelenghts, 79.29)
+#sun elevation at 21.3 and 21.9
+theoretical.values.56 <- transmittance(wavelenghts, 55.79)
+
+# Put all values in a tibble
+theoretical.values <- tibble("lambda" = wavelenghts,
+                             "32_deg" = theoretical.values.32 ,
+                             "56_deg" = theoretical.values.56 ,
+                             "79_deg" = theoretical.values.79)
+    
+# Create a  boxplot
+ggplot(Mt.Wilson.350) +
+  geom_boxplot(aes(x = `λ_350nm`, y = `trans_by_350nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_400nm`, y = `trans_by_400nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_450nm`, y = `trans_by_450nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_500nm`, y = `trans_by_500nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_600nm`, y = `trans_by_600nm` ,), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_700nm`, y = `trans_by_700nm` ), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_800nm`, y = `trans_by_800nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_900nm`, y = `trans_by_900nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_1000nm`, y = `trans_by_1000nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_boxplot(aes(x = `λ_1200nm`, y = `trans_by_1200nm`), na.rm = TRUE,
+               fill = "deepskyblue", alpha = 0.2, width = 0.05,
+               outlier.colour = "red") +
+  geom_point(data = theoretical.values, alpha = 0.5, size = 0.5,
+             aes(x = `lambda`, y = `32_deg`),
+                 na.rm = TRUE, color = "magenta4") +
+  geom_point(data = theoretical.values, alpha = 0.5, size = 0.5,
+             aes(x = `lambda`, y = `56_deg`),
+                 na.rm = TRUE, color = "blue") +
+  geom_point(data = theoretical.values, alpha = 0.5, size = 0.5,
+             aes(x = `lambda`, y = `79_deg`),
+                 na.rm = TRUE, color = "blue4") +
+  annotate("text", label = "Theoretical values (angle dependency)", x = 0.9, y = 0.41) +
+  annotate("segment", x = 1.25, xend = 0.5, y = 0.38, yend = 0.38,
+           colour = "black", size = 0.5, arrow = arrow(), alpha = 0.5) +
+  labs(title = "Transmittence of solar radiation measurements by wavelength",
+       subtitle = "Mt. Wilson (34.2153 N, 118.059 W, 1725m)",
+       x = "Wavelength [μm]", 
+       y = "Transmittance [normalized]") +
+  theme_bw() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+$$T = \frac{I_1}{I_0} = e^{-\tau * m}$$ $$-\frac{log(T)}{m}= -\frac{log(\frac{I_1}{I_0})}{m}=\tau,  and: m=\frac{1}{cos(\theta)}$$
+
+```{r}
+m.path <- 1 / cos(theta)
+m <- m.altitude + m.path
+
+function(TS3){
+  month <- month(TS3)    TS3[2]
+  xx <- 0
+  if( month <= 2) {xx <- 1}
+    month <- (12 * xx) + month
+    year <- TS3[1] - xx
+    nc <- floor(0.01 * year)
+    jd <- floor(365.25 * year) + floor(30.6001 * (1 + month)) + 
+      TS3[3] + 1720995 + (2 - (nc - floor(0.25 * nc)))
+    return(jd)
+}
+
+
+jd.function <- function(TS3){
+  mon <- month(TS3) 
+  xx <- 0
+  if( mon <= 2) {xx <- 1}
+    mon <- (12 * xx) + mon
+    ann <- year(TS3) - xx
+    nc <- floor(0.01 * ann)
+    jd <- floor(365.25 * ann) + floor(30.6001 * (1 + mon)) + 
+      day(TS3) + 1720995 + (2 - (nc - floor(0.25 * nc)))
+    return(jd)
+}
+
+date1 <- as.Date("2006-08-06")
+date1
+
+julian.number <- jd.function(date1)
+julian.number
+
+julian <- julian.date.number(c(1908, 8, 14))
+
+sun_heigth_calculator <- function(Date, lon, lat){
+  JD = jd.function(Date)
+  n = JD - 2451545
+  L = (280.46 + 0.9856474 * n) * pi / 180
+  g = (357.528 + 0.9856003 * n) * pi / 180
+  A = L + 1.915 * sin(g) + 0.01997 * sin(2 * g)
+  e = (23.439 - 0.0000004 * n) * pi / 180
+  D = asin(sin(e) * sin(A))
+  T_0 = (JD - 2451545) / 36525
+  T_1 = 9
+  Theta_h = 6.697376 + 2400.05134 * T_0 + 1.002738 * T_1
+  Theta_G = Theta_h * 15
+  Theta = (Theta_G + lon) * pi / 180
+  lat = lat * pi / 180
+  if(cos(A) > 0){
+    Alpha = atan(cos(e)* tan(A))
+    Tau = Theta - Alpha
+    h = asin(cos(D) * cos(Tau) * cos(lat) +
+                 sin(D) * sin(lat))
+  }
+  else{
+    Alpha = atan(cos(e)* tan(A)) + 4*atan(1)
+    Tau = Theta - Alpha
+    h = asin(cos(D) * cos(Tau)* cos(lat) +
+                 sin(D) * sin(lat))
+  }
+  return(h)  
+}
+    R = 1.02 / tan(h + 10.3 / (h + 5.11))
+    h_R = h + R / 60
+
+    R = 1.02 / tan((h * pi / 180) + 10.3 / ((h * pi / 180) + 5.11))
+    h_R = h + R / 60
+    
+test1 <- sun_heigth_calculator(date1 , 48.1, 11.6)
+
+pressure.adaption <- function(z){
+  new.pressure <- 101325 * exp((1.293 / 101325) * 9.81 * z)
+  m.altitude <- new.pressure / 101325
+  return(m.altitude)
+}
+
+m.wilson <- pressure.adaption(1727)
+  
+
+df <- data_frame(Mt.Wilson.350|>
+  filter(day(`Date`) > 18 & day(`Date`) < 24) |>
+  filter(month(`Date`) == 6) |>
+  select("Date", "year", "λ_500nm", "trans_by_500nm") |>
+  mutate("angle" = ((79.29 )* pi) / 180) |>
+  bind_rows(Mt.Wilson.350|>
+  filter(day(`Date`) > 18 & day(`Date`) < 24) |>
+  filter(month(`Date`) == 9) |>
+  select("Date", "year", "λ_500nm", "trans_by_500nm") |>
+  mutate("angle" = (55.79 * pi) / 180)) |>
+  mutate("AOD" = -log(`trans_by_500nm`) * (1 / sin(`angle`) * 1.2413)) |>
+  mutate("Date" = as.Date(`Date`))|>
+  arrange(`Date`) |>
+  mutate(sun_heigth = ifelse(`angle` == ((79.29 )* pi) / 180, "21.6 [79.29°]",
+         ifelse(`angle` == ((55.79 * pi) / 180), "21.9 [55.79°]", "no"))))
+
+
+
+ggplot(data = df, aes(x = `Date`, y = `AOD`, color = `sun_heigth`)) +
+  geom_point() +
+  geom_line(color = "black", size = 0.1) +
+  labs(title = "AOD for 500nm wavelength at 21.6 and 21.9 (± 2 days)",
+       subtitle = "Mt. Wilson (34.2153 N, 118.059 W, 1725m)",
+       x = "Date", 
+       y = "AOD [500nm]") +
+  theme_bw() +
+  theme(legend.background = element_rect(fill="white",
+                                  size=0.5, linetype="solid", 
+                                  colour ="black")) +
+  theme(legend.position = c(0.896, 0.15),
+        legend.background = element_rect(fill = "white", color = "black")) +
+  scale_color_discrete(name = "Sun heigth") +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+```
 
