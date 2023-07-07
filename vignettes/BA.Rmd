@@ -569,6 +569,87 @@ Mt.Wilson.1905.1920|>
 dev.off
 ```
 
+```{r}
+# optical depth
+pdf('../analysis/Mt.Wilson.od.1905.1920.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1905.1920|>
+  dplyr::rename('350' = transmission1....100.,
+                '400' = transmission2....100.,
+                '450' = transmission3....100.,
+                '500' = transmission4....100.,
+                '600' = transmission5....100.,
+                '700' = transmission6....100.,
+                '800' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::mutate(Row = c(1 : length(Date))) |>
+  dplyr::mutate_at(c('350', '400','450', '500', '600', '700', 
+                     '800', '1000', '1200', '1600'), ~-log(.))|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("350", "400", "450", "500", "600", "700", 
+                           "800", "1000", "1200", "1600")))|>
+  dplyr::mutate(values = ifelse(values >= 1, values/1000, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.5) +
+  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
+  y = 0, label= "Katmai [1912-06-06]", hjust = -1.6, vjust = -0.2, angle = 90) +
+  labs(x = 'Time [1905 - 1920]', y = 'Optical depth') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
+###############################################################################################
+pdf('../analysis/Mt.Wilson.od.1912.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1905.1920|>
+  dplyr::rename('350' = transmission1....100.,
+                '400' = transmission2....100.,
+                '450' = transmission3....100.,
+                '500' = transmission4....100.,
+                '600' = transmission5....100.,
+                '700' = transmission6....100.,
+                '800' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::mutate(Row = c(1 : length(Date))) |>
+  dplyr::mutate_at(c('350', '400','450' ,'500', '600', '700', 
+                     '800', '1000', '1200', '1600'), ~-log(.))|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("350", "400", "450", "500", "600", "700", 
+                           "800", "1000", "1200", "1600")))|>
+  dplyr::mutate(values = ifelse(values >= 1, values/1000, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1913-01-01')) |>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.5) +
+  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
+  y = 0, label= "Katmai [1912-06-06]", hjust = -1.6, vjust = -.2, angle = 90) +
+  labs(x = 'Months [1912]', y = 'Optical depth') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
+```
+
+```         
+```
+
 ## Table Mountain
 
 ```{r}
@@ -604,11 +685,50 @@ dplyr::mutate(variable = factor(variable,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+
+
+Table.mountain.1925.1930|>
+  dplyr::rename('400' = transmission1....100.,
+                '450' = transmission2....100.,
+                '500' = transmission3....100.,
+                '600' = transmission4....100.,
+                '700' = transmission5....100.,
+                '800' = transmission6....100.,
+                '900' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::select(ends_with('0'), Date)|>
+  dplyr::mutate_at(c('400', '450', '500', '600', '700', 
+                     '800','900', '1000', '1200', '1600'), ~-log(.))|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+dplyr::mutate(variable = factor(variable,
+                                levels = c("400", "450", "500", "600", "700",
+                                      "800", "900", "1000", "1200", "1600")))|>
+  dplyr::mutate(values = ifelse(values >= 1, values/1000, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  drop_na()|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable)) +
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = 0, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90) +
+  labs(x = 'Date', y = 'Optical depth') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
 ```
 
 ## Washington
 
 ```{r}
+pdf('../analysis/washington.1902.1907.pdf',
+    width = 8, height = 5)
 Washington.1902.1904|>
   dplyr::rename('400' = transmission1....100.,
                 '450' = transmission2....100.,
@@ -624,7 +744,7 @@ Washington.1902.1904|>
   pivot_longer(cols = ends_with('0'),
                names_to = 'variable',
                values_to = 'values')|>
-dplyr::mutate(variable = factor(variable,
+  dplyr::mutate(variable = factor(variable,
                                 levels = c("400", "450", "500", "600", "700",
                                       "800", "900", "1000", "1200", "1600")))|>
   drop_na()|>
@@ -642,6 +762,120 @@ dplyr::mutate(variable = factor(variable,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
 ###############################################################################################
+pdf('../analysis/washington.1902.santamaria.pdf',
+    width = 8, height = 5)
+Washington.1902.1904|>
+  dplyr::rename('400' = transmission1....100.,
+                '450' = transmission2....100.,
+                '500' = transmission3....100.,
+                '600' = transmission4....100.,
+                '700' = transmission5....100.,
+                '800' = transmission6....100.,
+                '900' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::select(ends_with('0'), Date)|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                                levels = c("400", "450", "500", "600", "700",
+                                      "800", "900", "1000", "1200", "1600")))|>
+  dplyr::filter(Date > as_date('1902-01-01') & Date < as_date('1904-01-01')) |>
+  drop_na()|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable)) +
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-26")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1902-10-26", format = '%Y-%m-%d'),
+  y = 0, label= "Santa Maria [1902-10-26]", hjust = 0, vjust = -0.2, angle = 90) +
+  labs(x = 'Date', y = 'Transmittance [%]') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
+```
 
+## 
+
+```{r}
+pdf('../analysis/washington.od.1902.1907.pdf',
+    width = 8, height = 5)
+Washington.1902.1904|>
+  dplyr::rename('400' = transmission1....100.,
+                '450' = transmission2....100.,
+                '500' = transmission3....100.,
+                '600' = transmission4....100.,
+                '700' = transmission5....100.,
+                '800' = transmission6....100.,
+                '900' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::select(ends_with('0'), Date)|>
+  dplyr::mutate_at(c('400', '450', '500', '600', '700', 
+                     '800','900', '1000', '1200', '1600'), ~-log(.))|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                                levels = c("400", "450", "500", "600", "700",
+                                      "800", "900", "1000", "1200", "1600")))|>
+  drop_na()|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable)) +
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-26")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1902-10-26", format = '%Y-%m-%d'),
+  y = 0, label= "Santa Maria [1902-10-26]", hjust = -1, vjust = -0.2, angle = 90) +
+  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +
+    annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
+  y = 0, label= "Ksudach [1907-03-28]", hjust = -1, vjust = -0.2, angle = 90) +
+  labs(x = 'Date [1902 - 1907]', y = 'Optical depth') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
+###############################################################################################
+pdf('../analysis/washington.od.1902.pdf',
+    width = 8, height = 5)
+Washington.1902.1904|>
+  dplyr::rename('400' = transmission1....100.,
+                '450' = transmission2....100.,
+                '500' = transmission3....100.,
+                '600' = transmission4....100.,
+                '700' = transmission5....100.,
+                '800' = transmission6....100.,
+                '900' = transmission7....100.,
+                '1000' = transmission8....100.,
+                '1200' = transmission9....100.,
+                '1600' = transmission10....100.) |>
+  dplyr::select(ends_with('0'), Date)|>
+  dplyr::mutate_at(c('400', '450', '500', '600', '700', 
+                     '800','900', '1000', '1200', '1600'), ~-log(.))|>
+  pivot_longer(cols = ends_with('0'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                                levels = c("400", "450", "500", "600", "700",
+                                      "800", "900", "1000", "1200", "1600")))|>
+  dplyr::filter(Date > as_date('1902-01-01') & Date < as_date('1904-01-01')) |>
+  drop_na()|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable)) +
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-26")), linetype = 'dotted') +
+  annotate("text", x = as.Date("1902-10-26", format = '%Y-%m-%d'),
+  y = 0, label= "Santa Maria [1902-10-26]", hjust = -1, vjust = -0.2, angle = 90) +
+  labs(x = 'Months [1902 - 1903]', y = 'Optical depth') +
+  scale_color_viridis_d(option = "magma",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]")) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+dev.off()
 ```
