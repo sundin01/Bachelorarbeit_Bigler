@@ -1,5 +1,5 @@
 ---
-title: "BA"
+title: "Bachelorarbeit: Introduction"
 author: "Patrick Bigler"
 date: "2023-07-07"
 output: html_document
@@ -16,6 +16,18 @@ conflicts_prefer(ggplot2::annotate)
 ```
 
 ## Read files
+
+Here, we read all digitized data sets. For a comprehensive analysis, it is important to have enough data. Therefore, only data sets containing more than 40 measurements are used. The following data sets were not considered:
+
+-   Bassour (13 measurements)
+
+-   Mt. Whitney (5 Measurements)
+
+-   Mt.Wilson (5 Measurements)
+
+-   Mt. Wilson (20Measurements)
+
+-   Mt. Wilson (18 Measurements)
 
 ```{r}
 Bassour.1911.1912 <- read.delim("../Data/Bassour.txt")
@@ -46,6 +58,8 @@ Table.mountain.1925.1930 <- read.delim("../Data/Table_mountain.txt")
 ```
 
 ## Coordinates-Transformation
+
+Here, we transform coordinates in the WGS84 system
 
 ```{r}
 source("../R/function.coordinate.transformation.R")
@@ -95,7 +109,9 @@ greenland.lat <- 77.45
 greenland.lon <- -51.06
 ```
 
-## Create a tibble
+## Visualize the locations
+
+Here, we create a tibble for all location. We need that for mapping the locations.
 
 ```{r}
 df.locations <- tibble("Location" =
@@ -121,8 +137,6 @@ c(NA, NA ,2047, 3772, 1512, 1079, 551, 2711, 2250, 2286, 1721,
 "Legend" =
 c(rep("Ice core",2) ,rep("Volcano",5), rep("Observation station", 8)))
 ```
-
-## Visualize the overview
 
 ```{r}
 #read the world map
@@ -162,7 +176,7 @@ dev.off()
 
 ```
 
-# Analysis
+# Quality of the Data
 
 ## Preparation
 
@@ -271,13 +285,15 @@ dplyr::select(-c('year', 'month', 'day'))
 Washington.1903.1907 <- replace(Washington.1903.1907, Washington.1903.1907 == -999, NA)
 ```
 
-### Calama
+# Analysis
 
-### Haraqua Hala
+## Calama
 
-### Hump Mountain
+## Haraqua Hala
 
-### Montezuma
+## Hump Mountain
+
+## Montezuma
 
 ```{r}
 pdf('../analysis/montezuma.1920.1930.pdf',
@@ -385,679 +401,6 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-```
-
-### Mt. Wilson
-
-#### Slice and rebuild
-
-```{r Preparation_Mt.Wilson}
-
-Mt.Wilson_a <- Mt.Wilson.1905.1920|>
-  slice(1:121)|>
-  dplyr::rename('lambda_400' = 'lambda1...m.', 'lambda_450' = 'lambda2...m.',
-                'lambda_500' = 'lambda3...m.', 'lambda_600' = 'lambda4...m.',
-                'lambda_700' = 'lambda5...m.','lambda_800' = 'lambda6...m.',
-                'lambda_900' = 'lambda7...m.','lambda_1000' = 'lambda8...m.',
-                'lambda_1200' = 'lambda9...m.','lambda_1600' = 'lambda10...m.',
-                'trans_400' = 'transmission1....100.', 'trans_450' = 'transmission2....100.',
-                'trans_500' = 'transmission3....100.','trans_600' = 'transmission4....100.',
-                'trans_700' = 'transmission5....100.','trans_800' = 'transmission6....100.',
-                'trans_900' = 'transmission7....100.','trans_1000' = 'transmission8....100.',
-                'trans_1200' = 'transmission9....100.',
-                'trans_1600' = 'transmission10....100.')|>
-  dplyr::mutate('lambda_350' = 0.35, 'trans_350' = NA)|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 
-                  'lambda_600', 'trans_600', 'lambda_700', 'trans_700', 
-                  'lambda_800', 'trans_800', 'lambda_900', 'trans_900', 
-                  'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
-
-Mt.Wilson_b <- Mt.Wilson.1905.1920|>
-  slice(122:563)|>
-    dplyr::rename('lambda_350' = 'lambda1...m.','lambda_400' = 'lambda2...m.',
-                'lambda_450' = 'lambda3...m.','lambda_500' = 'lambda4...m.',
-                'lambda_600' = 'lambda5...m.','lambda_700' = 'lambda6...m.',
-                'lambda_800' = 'lambda7...m.', 'lambda_900' = 'lambda8...m.',
-                'lambda_1000' = 'lambda9...m.', 'lambda_1200' = 'lambda10...m.',
-                'lambda_1600' = 'lambda11...m.',
-                'trans_350' = 'transmission1....100.','trans_400' = 'transmission2....100.',
-                'trans_450' = 'transmission3....100.','trans_500' = 'transmission4....100.',
-                'trans_600' = 'transmission5....100.','trans_700' = 'transmission6....100.',
-                'trans_800' = 'transmission7....100.','trans_900' = 'transmission8....100.',
-                'trans_1000' = 'transmission9....100.','trans_1200' = 'transmission10....100.',
-                'trans_1600' = 'transmission11....100.')|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 
-                  'lambda_600', 'trans_600', 'lambda_700', 'trans_700', 
-                  'lambda_800', 'trans_800', 'lambda_900', 'trans_900', 
-                  'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
-
-Mt.Wilson_c <- Mt.Wilson.1905.1920|>
-  slice(564:1245)|>
-  dplyr::rename('lambda_350' = 'lambda1...m.','lambda_400' = 'lambda2...m.',
-                'lambda_450' = 'lambda3...m.','lambda_500' = 'lambda4...m.',
-                'lambda_600' = 'lambda5...m.','lambda_700' = 'lambda6...m.',
-                'lambda_800' = 'lambda7...m.','lambda_1000' = 'lambda8...m.',
-                'lambda_1200' = 'lambda9...m.','lambda_1600' = 'lambda10...m.',
-                'trans_350' = 'transmission1....100.','trans_400' = 'transmission2....100.',
-                'trans_450' = 'transmission3....100.', 'trans_500' = 'transmission4....100.',
-                'trans_600' = 'transmission5....100.','trans_700' = 'transmission6....100.',
-                'trans_800' = 'transmission7....100.','trans_1000' = 'transmission8....100.',
-                'trans_1200' = 'transmission9....100.',
-                'trans_1600' = 'transmission10....100.',)|>
-  dplyr::mutate('lambda_900' = 0.9, 'trans_900' = NA)|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 'lambda_600', 
-                  'trans_600','lambda_700', 'trans_700', 'lambda_800', 'trans_800',
-                  'lambda_900', 'trans_900', 'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
-
-
-Mt.Wilson <- rbind(Mt.Wilson_a, Mt.Wilson_b)
-
-Mt.Wilson <- rbind(Mt.Wilson, Mt.Wilson_c)
-
-Mt.Wilson <- Mt.Wilson|>
-  dplyr::mutate(across(3:24, ~ifelse(.x > 2, NA, .x)))|>
-  dplyr::filter(trans_1000 > 0.7)
-```
-
-#### Dataquality
-
--   Transform data frame into a long format.
-
--   Set levels
-
--   Substitute strange values with NA
-
-```{r}
-Mt.Wilson_long <- Mt.Wilson|>
-  dplyr::select(c('Date', starts_with('t')))|>
-  pivot_longer(cols = starts_with('t'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate('lambda' = rep(c('350', '400', '450', '500', '600', '700', 
-                                 '800','900', '1000', '1200', '1600'), times = 1238))|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("trans_350", "trans_400", "trans_450", "trans_500", 
-                           "trans_600", "trans_700", "trans_800", "trans_900",
-                           "trans_1000", "trans_1200", "trans_1600")))|>
-  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
-  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
-
-Mt.Wilson.alpha <- Mt.Wilson|>
-  dplyr::mutate(
-    alpha_350 = -(log(Mt.Wilson$trans_350) - log(Mt.Wilson$trans_1000)) / log(350),
-    alpha_400 = -(log(Mt.Wilson$trans_400) - log(Mt.Wilson$trans_1000)) / log(400),
-    alpha_450 = -(log(Mt.Wilson$trans_450) - log(Mt.Wilson$trans_1000)) / log(450),
-    alpha_500 = -(log(Mt.Wilson$trans_500) - log(Mt.Wilson$trans_1000)) / log(500),
-    alpha_600 = -(log(Mt.Wilson$trans_600) -log(Mt.Wilson$trans_1000)) / log(600),
-    alpha_700 = -(log(Mt.Wilson$trans_700) - log(Mt.Wilson$trans_1000)) / log(700),
-    alpha_800 = -(log(Mt.Wilson$trans_800) - log(Mt.Wilson$trans_1000)) / log(800),
-    alpha_900 = -(log(Mt.Wilson$trans_900) -  log(Mt.Wilson$trans_1000)) / log(900),
-    alpha_1200 = -(log(Mt.Wilson$trans_1200) - log(Mt.Wilson$trans_1000)) / log(1200),
-    alpha_1600= -(log(Mt.Wilson$trans_1600) - log(Mt.Wilson$trans_1000)) / log(1600))
-
-Mt.Wilson.alpha|>
-  dplyr::select(c('row','Date', starts_with('a')))
-
-Mt.Wilson.alpha.long <- Mt.Wilson.aplha|>
-  pivot_longer(cols = starts_with('a'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("alpha_350", "alpha_400", "alpha_450", "alpha_500", 
-                           "alpha_600", "alpha_700", "alpha_800", "alpha_900",
-                           "alpha_1000", "alpha_1200", "alpha_1600")))
-```
-
-#### Visualize Transmission
-
-```{r message=FALSE, warning=FALSE, error=FALSE}
-
-################################################################################
-# Overview
-
-Mt.Wilson_long|>
-ggplot()+
-  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.1) +
-  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = 0, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90) + 
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90) +  
-  labs(x = 'Date [year]', y = 'Transmittance [%]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-################################################################################
-# Zoom in 
-  
-Mt.Wilson_long|>
-  # Change dates in the filter to zoom into another time period
-  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1913-01-01')) |>
-ggplot()+
-  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.75) +
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  # Adapt labels
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  labs(x = 'Months [1912]', y = 'Transmittance [%]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-
-```
-
-#### Boxplot
-
-```{r message=FALSE, warning=FALSE}
-
-Mt.Wilson_long|>
-  dplyr::filter(variable == 'trans_900')|>
-  drop_na()
-
-Mt.Wilson.boxplot <- Mt.Wilson_long|>
-    dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
-                  (Date > as_date('1914-01-01') & Date < as_date('1918-01-01'))) |>
-ggplot()+
-  geom_boxplot(aes(x = variable, y = values),
-  notch = TRUE, outlier.alpha = .1, outlier.colour = 'black') +
-  stat_boxplot(aes(x = variable, y = values),
-  geom='errorbar', linetype = 1, width = 0.5) +
-  geom_jitter(aes(x = variable, y = values), size = .5, width = .1, alpha = .1) +
-  scale_x_discrete(labels = c('350', '400', '450', '500', '600', '700', '800', 
-                              '900','1000', '1200', '1600')) +
-  labs(x = 'Wavelength [nm]', y = 'Transmittance [%]') +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-Mt.Wilson.boxplot
-```
-
-```{r}
-
-
-prep.mean <- Mt.Wilson|>
-    dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
-                  (Date > as_date('1914-01-01') & Date < as_date('1918-01-01'))) |>
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date, 
-                   '350' = mean(trans_350, na.rm = TRUE),,
-                   '400' = mean(trans_400, na.rm = TRUE),,                   
-                   '450' = mean(trans_450, na.rm = TRUE),,                  
-                   '500' = mean(trans_500, na.rm = TRUE),,                   
-                   '600' = mean(trans_600, na.rm = TRUE),,                   
-                   '700' = mean(trans_700, na.rm = TRUE),,                   
-                   '800' = mean(trans_800, na.rm = TRUE),,   
-                   '1000' = mean(trans_1000, na.rm = TRUE),, 
-                   '1200' = mean(trans_1200, na.rm = TRUE),,                   
-                   '1600' = mean(trans_1600, na.rm = TRUE),)|>
-  dplyr::select(c('Date','month', ends_with('0'))) |>
-  pivot_longer(cols = ends_with('0'), 
-               names_to = 'variable', values_to = 'value')
-  
-prep.std <- Mt.Wilson|>
-    dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
-                  (Date > as_date('1914-01-01') & Date < as_date('1918-01-01'))) |>
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date,,
-                   std_350 = sd(trans_350, na.rm = TRUE),,
-                   std_400 = sd(trans_400, na.rm = TRUE),                   
-                   std_450 = sd(trans_450, na.rm = TRUE),                  
-                   std_500 = sd(trans_500, na.rm = TRUE),                                                         std_600 = sd(trans_600, na.rm = TRUE),                   
-                   std_700 = sd(trans_700, na.rm = TRUE),                   
-                   std_800 = sd(trans_800, na.rm = TRUE),   
-                   std_1000 = sd(trans_1000, na.rm = TRUE), 
-                   std_1200 = sd(trans_1200, na.rm = TRUE),                   
-                   std_1600 = sd(trans_1600, na.rm = TRUE))|>
-  dplyr::select(c('Date','month', starts_with('std'))) |>
-  pivot_longer(cols = starts_with(c('std')), 
-               names_to = 'variable', values_to = 'value')
-
-transmission <- inner_join(prep.mean, prep.std, by = 'Date') |>
-  dplyr::rename('month' = 'month.x',
-                'variable' = 'variable.x',
-                'mean' = 'value.x',
-                'std' = 'value.y')|>
-  dplyr::select(c('month', 'variable', 'mean', 'std'))|>
-  group_by(month, variable)|>
-  dplyr::summarise(mean = mean(mean),
-                   std = mean(std))|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("350", "400", "450", "500", 
-                           "600", "700", "800",
-                           "000", "1200", "1600"))) |>
-  dplyr::filter(variable == '350' | variable == '400' | variable == '450' |
-                  variable == '600' | variable == '700' | variable == '1600') |>
-ggplot() +
-  geom_point(aes(x = month, y = mean, color = variable)) +
-  geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
-  geom_errorbar(aes(x = month, ymin = mean - std, ymax = mean + std), width = .1) +
-  guides(color = guide_legend(title = "Wavelength [nm]")) +
-  scale_color_viridis_d(option = "viridis",
-  guide = guide_legend(override.aes = list(size = 3, alpha = 1))) +
-  labs(x = 'Months', y = 'Monthly mean transmission [ ]') +
-
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-transmission
-```
-
-```{r warning=FALSE, error=FALSE, message=FALSE}
-
-
-
-part_1 <- Mt.Wilson|>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise(mean_350 = mean(trans_350, na.rm = TRUE),
-                   mean_400 = mean(trans_400, na.rm = TRUE),
-                   mean_450 = mean(trans_450, na.rm = TRUE),
-                   mean_500 = mean(trans_500, na.rm = TRUE),
-                   mean_600 = mean(trans_600, na.rm = TRUE),
-                   mean_700 = mean(trans_700, na.rm = TRUE),
-                   mean_800 = mean(trans_800, na.rm = TRUE),
-                   mean_1200 = mean(trans_1200, na.rm = TRUE),
-                   mean_1600 = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = starts_with('me'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("mean_350", "mean_400", "mean_450", "mean_500", 
-                           "mean_600", "mean_700", "mean_800",
-                           "mean_1000", "mean_1200", "mean_1600")))|>
-  dplyr::filter((month > as_date('1909-01-01') & month < as_date('1911-01-31')))
-  
-part_2 <- Mt.Wilson|>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise(mean_350 = mean(trans_350, na.rm = TRUE),
-                   mean_400 = mean(trans_400, na.rm = TRUE),
-                   mean_450 = mean(trans_450, na.rm = TRUE),
-                   mean_500 = mean(trans_500, na.rm = TRUE),
-                   mean_600 = mean(trans_600, na.rm = TRUE),
-                   mean_700 = mean(trans_700, na.rm = TRUE),
-                   mean_800 = mean(trans_800, na.rm = TRUE),
-                   mean_1200 = mean(trans_1200, na.rm = TRUE),
-                   mean_1600 = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = starts_with('me'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::filter(month > as_date('1914-01-01') & month < as_date('1920-01-01'))
-
-  x <- factor(c("alpha","beta","gamma","alpha","beta"))
-levels(x) <- list(A="alpha", B="beta", C="gamma")
-
-ggplot() +
-  geom_point(data = part_1, aes(x = month, y = values, color = variable)) +
-  stat_smooth(data = part_1, aes(x = month, y = values, color = variable),
-              linewidth = 0.5, se = FALSE, na.rm = TRUE, method = 'loess') +
-  geom_point(data = part_2, aes(x = month, y = values, color = variable)) +
-  stat_smooth(data = part_2, aes(x = month, y = values, color = variable),
-              linewidth = 0.5, se = FALSE, na.rm = TRUE, method = 'loess') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +  
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-
-```
-
-#### Optical Depth
-
-```{r warning=FALSE, error=FALSE, message=FALSE}
-# optical depth
-
-Mt.Wilson_long|>
-  dplyr::mutate_at(c('values'), ~-log(.))|>
-  ggplot()+
-  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.1) +
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = -1.6, vjust = -0.2, angle = 90) +
-  labs(x = 'Time [1905 - 1920]', y = 'Optical depth') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-###############################################################################################
-
-Mt.Wilson_long|>
-  dplyr::mutate_at(c('values'), ~-log(.))|>
-  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1913-01-01')) |>
-  ggplot()+
-  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.5) +
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = -1.6, vjust = -.2, angle = 90) +
-  labs(x = 'Months [1912]', y = 'Optical depth') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  scale_fill_discrete(breaks = c("trans_350", "trans_400", "trans_450", 
-                                "trans_500", "trans_600", "trans_700", 
-                                "trans_800", "trans_900","trans_1200", "trans_1600"), 
-                        labels = c(c("350", "400", "450", "500", 
-                           "600", "700", "800", "900", "1200", "1600"))) +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-```
-
-#### Angström Parameter
-
-```{r message=FALSE, error=FALSE, warning=FALSE}
-Mt.Wilson.overview <- Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise('350' = mean(trans_350, na.rm = TRUE),
-                   '400' = mean(trans_400, na.rm = TRUE),
-                   '450' = mean(trans_450, na.rm = TRUE),
-                   '500' = mean(trans_500, na.rm = TRUE),
-                   '600' = mean(trans_600, na.rm = TRUE),
-                   '700' = mean(trans_700, na.rm = TRUE),
-                   '800' = mean(trans_800, na.rm = TRUE),
-                   '1200' = mean(trans_1200, na.rm = TRUE),
-                   '1600' = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = ends_with('0'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("350", "400", "450", "500", 
-                           "600", "700", "800",
-                           "1000", "1200", "1600")))|>
-  ggplot()+
-  annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
-  y = 0.4, label= "Ksudach [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
-  annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
-  y = 0.4, label= "Novarupta [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
-  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = 0.4, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  geom_rect(aes(xmin = as.Date("1908-01-01", format = '%Y-%m-%d'), 
-                xmax = as.Date("1909-08-09", format = '%Y-%m-%d'), 
-                ymin = -Inf, ymax = Inf), 
-            color = "lightskyblue1", alpha = 0.01, fill = "lightskyblue1", linewidth = 0.2) +   
-  geom_rect(aes(xmin = as.Date("1912-06-12", format = '%Y-%m-%d'), 
-                xmax = as.Date("1914-06-04", format = '%Y-%m-%d'), 
-                ymin = -Inf, ymax = Inf), 
-          color = "lightskyblue1", alpha = 0.01, fill = "lightskyblue1", linewidth = 0.2) +
-  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
-                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
-                ymin = -Inf, ymax = Inf), 
-          color = "lightskyblue1", alpha = 0.01, fill = "lightskyblue1", linewidth = 0.2) +
-  geom_point(aes(x = month, y = values, color = variable))+
-  geom_line(aes(x = month, y = values, color = variable), size = 0.1)+  
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
-  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0.4, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
-  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = 0.4, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
-  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 0.4, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
-  labs(x = 'Time [1905 - 1920]', y = 'Annual mean of the Ångström Parameter [ ]') +
-  scale_y_continuous(limits = c(0.4, 1))+
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-Mt.Wilson.overview
-```
-
-```{r}
-Mt.Wilson.alpha.overview <- Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'day'))|>
-  dplyr::summarise(mean_350 = mean(trans_350, na.rm = TRUE),
-                   mean_400 = mean(trans_400, na.rm = TRUE),
-                   mean_450 = mean(trans_450, na.rm = TRUE),
-                   mean_500 = mean(trans_500, na.rm = TRUE),
-                   mean_600 = mean(trans_600, na.rm = TRUE),
-                   mean_700 = mean(trans_700, na.rm = TRUE),
-                   mean_800 = mean(trans_800, na.rm = TRUE),
-                   mean_1200 = mean(trans_1200, na.rm = TRUE),
-                   mean_1600 = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = starts_with('me'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("mean_350", "mean_400", "mean_450", "mean_500", 
-                           "mean_600", "mean_700", "mean_800",
-                           "mean_1000", "mean_1200", "mean_1600")))|>
-  group_by(variable)|>
-  dplyr::filter(month > as_date('1912-05-01') & month < as_date('1913-01-01'))
-
-Mt.Wilson.alpha.overview|>
-  ggplot(aes(x = month, y = values, color = variable)) +
-  geom_point(aes(y = values, color = variable), alpha = 0.5) +
-  stat_smooth(linewidth = 0.5, se = FALSE, na.rm = TRUE, method = 'loess') +
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  labs(x = 'Time [1905 - 1920]', 
-       y = 'Annual mean of the Ångström Parameter [ ]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  scale_y_continuous(limits = c(0.4, 1))+  
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-Mt.Wilson.alpha.overview
-
-```
-
-```{r warning=FALSE, error=FALSE, message=FALSE}
-
-Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'month'))|>
-  dplyr::summarise('350' = mean(trans_350, na.rm = TRUE),
-                   '400' = mean(trans_400, na.rm = TRUE),
-                   '450' = mean(trans_450, na.rm = TRUE),
-                   '500' = mean(trans_500, na.rm = TRUE),
-                   '600' = mean(trans_600, na.rm = TRUE),
-                   '700' = mean(trans_700, na.rm = TRUE),
-                   '800' = mean(trans_800, na.rm = TRUE),
-                   '900' = mean(trans_900, na.rm = TRUE),
-                   '1200' = mean(trans_1200, na.rm = TRUE),
-                   '1600' = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = ends_with('0'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("350", "400", "450", "500", 
-                           "600", "700", "800", "900",
-                           "1000", "1200", "1600")))|>
-  ggplot()+
-  geom_point(aes(x = month, y = values, color = variable))+
-  geom_line(aes(x = month, y = values, color = variable), size = 0.1)+
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
-  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = 0, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90) +  
-  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90) + 
-  labs(x = 'Time [1905 - 1920]', 
-       y = 'Annual mean of the Ångström Parameter [ ]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  scale_y_continuous(limits = c(0.4, 1))+
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-
-Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'month'))|>
-  dplyr::summarise('350' = mean(trans_350, na.rm = TRUE),
-                   '400' = mean(trans_400, na.rm = TRUE),
-                   '450' = mean(trans_450, na.rm = TRUE),
-                   '500' = mean(trans_500, na.rm = TRUE),
-                   '600' = mean(trans_600, na.rm = TRUE),
-                   '700' = mean(trans_700, na.rm = TRUE),
-                   '800' = mean(trans_800, na.rm = TRUE),
-                   '900' = mean(trans_900, na.rm = TRUE),
-                   '1200' = mean(trans_1200, na.rm = TRUE),
-                   '1600' = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = ends_with('0'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("350", "400", "450", "500", 
-                           "600", "700", "800", "900",
-                           "1000", "1200", "1600")))|>
-  dplyr::filter(month > as_date('1912-01-01') & month < as_date('1913-01-01')) |>
-  ggplot()+
-  geom_point(aes(x = month, y = values, color = variable))+
-  geom_line(aes(x = month, y = values, color = variable), size = 0.1)+
-  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
-  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  labs(x = 'Time [1905 - 1920]', 
-       y = 'Annual mean of the Ångström Parameter [ ]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  scale_y_continuous(limits = c(0.4, 1))+  
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'day'))|>
-  dplyr::summarise(mean_350 = mean(trans_350, na.rm = TRUE),
-                   mean_400 = mean(trans_400, na.rm = TRUE),
-                   mean_450 = mean(trans_450, na.rm = TRUE),
-                   mean_500 = mean(trans_500, na.rm = TRUE),
-                   mean_600 = mean(trans_600, na.rm = TRUE),
-                   mean_700 = mean(trans_700, na.rm = TRUE),
-                   mean_800 = mean(trans_800, na.rm = TRUE),
-                   mean_900 = mean(trans_900, na.rm = TRUE),
-                   mean_1200 = mean(trans_1200, na.rm = TRUE),
-                   mean_1600 = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = starts_with('me'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("mean_350", "mean_400", "mean_450", "mean_500", 
-                           "mean_600", "mean_700", "mean_800", "mean_900",
-                           "mean_1000", "mean_1200", "mean_1600")))|>
-  group_by(variable)|>
-  dplyr::filter(month > as_date('1913-05-01') & month < as_date('1914-01-01'))
-
-
-Mt.Wilson.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'day'))|>
-  dplyr::summarise(mean_350 = mean(trans_350, na.rm = TRUE),
-                   mean_400 = mean(trans_400, na.rm = TRUE),
-                   mean_450 = mean(trans_450, na.rm = TRUE),
-                   mean_500 = mean(trans_500, na.rm = TRUE),
-                   mean_600 = mean(trans_600, na.rm = TRUE),
-                   mean_700 = mean(trans_700, na.rm = TRUE),
-                   mean_800 = mean(trans_800, na.rm = TRUE),
-                   mean_900 = mean(trans_900, na.rm = TRUE),
-                   mean_1200 = mean(trans_1200, na.rm = TRUE),
-                   mean_1600 = mean(trans_1600, na.rm = TRUE))|>
-  pivot_longer(cols = starts_with('me'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c("mean_350", "mean_400", "mean_450", "mean_500", 
-                           "mean_600", "mean_700", "mean_800", "mean_900",
-                           "mean_1000", "mean_1200", "mean_1600")))|>
-  group_by(variable)|>
-  drop_na()|>
-  dplyr::mutate(rolling_mean = rollmean(values, 5, fill = NA))|>
-  dplyr::filter(month > as_date('1912-05-01') & month < as_date('1913-01-01')) |>
-  ggplot(aes(x = month, y = rolling_mean, color = variable)) +
-  geom_point(aes(y = values, color = variable)) +
-  geom_line(aes(y = values, color = variable), size = 0.1) +
-  geom_smooth(na.rm = TRUE, se = FALSE) +
-  labs(x = 'Time [1905 - 1920]', 
-       y = 'Annual mean of the Ångström Parameter [ ]') +
-  scale_color_viridis_d(option = "magma",
-  guide = guide_legend(override.aes = list(size = 3,
-  alpha = 1), title = "Wavelength [nm]")) +
-  scale_y_continuous(limits = c(0.4, 1))+  
-  theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
-
-
-
-```
-
-```{r}
-
-# create the smooth and retain rows with max of smooth, using slice_max
-sm_max = df |> group_by(variable)|> drop_na() |>
-  dplyr::mutate(smooth = predict(loess(values~as.numeric(month), 
-                                       span=.75, normalize = FALSE, method = 'loess'))) |>
-  dplyr::filter(month > as_date('1912-05-01') & month < as_date('1913-01-01')) |>
-  dplyr::filter(variable == 'mean_350')
-  slice_max(order_by = smooth)
-
-# create the smooth and retain rows with max of smooth, using slice_max
-  sm_max = df |>
-  drop_na()|>
-  dplyr::mutate(smooth = predict(loess(values~as.numeric(month), span=.75)))|>
-  dplyr::filter(variable == 'mean_350')|>
-  dplyr::filter(smooth == min(smooth))  
-
-# Plot, using the same smooth as above (default is loess, span set at set above)
-df %>%
-  ggplot(df, mapping = aes(date, value, group = category, color = category)) +
-  geom_point() +
-  geom_smooth(span=.5, se=F, na.rm = TRUE) + 
-  geom_point(data=sm_max, aes(y=smooth),color="black", size=5) + 
-  geom_text_repel(data = sm_max, aes(label=paste0("Peak: ",round(smooth,1))), color="black")
-```
-
-#### PDFs
-
-```{r}
-################################################################################
-# PDFs
-
-pdf('../analysis/Mt.Wilson.1905.1920.pdf',
-    width = 8, height = 5)
-Mt.Wilson.overview
-dev.off()
-
-pdf('../analysis/boxplot_Mt.Wilson.pdf',
-    width = 8, height = 5)
-Mt.Wilson.boxplot
-dev.off()
-
-pdf('../analysis/monthly_transmission_Mt.Wilson.pdf',
-    width = 8, height = 5)
-transmission
-dev.off()
-
-
-pdf('../analysis/Mt.Wilson.od.1905.1920.pdf',
-    width = 8, height = 5)
-dev.off()
-
-pdf('../analysis/Mt.Wilson.od.1912.pdf',
-    width = 8, height = 5)
 ```
 
 ### Table Mountain
