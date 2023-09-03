@@ -17,7 +17,7 @@ editor_options:
 
 ## Read packages
 
-```{r message=FALSE, error=FALSE, warning=FALSE}
+```{r Package, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
@@ -26,7 +26,7 @@ conflicts_prefer(dplyr::mutate)
 
 ## Read data
 
-```{r}
+```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
 Mt.Wilson.1905.1920 <- read.delim("../Data/Mt_Wilson_1.txt")
 
 Mt.Wilson.1905.1906 <- read.delim("../Data/Mt_Wilson_2.txt")
@@ -54,7 +54,7 @@ Because there are shifts in the data sets, we must slice the table into
 sub-tables. After that, we can correct the shift and build it all back
 together. Simultaneously, we change the column names.
 
-```{r Preparation_Mt.Wilson}
+```{r Preparation_Mt.Wilson, message=FALSE, error=FALSE, warning=FALSE}
 
 Mt.Wilson_a <- Mt.Wilson.1905.1920|>
   slice(1:121)|>
@@ -137,7 +137,7 @@ Mt.Wilson <- Mt.Wilson|>
 
 -   Substitute strange values with NA
 
-```{r}
+```{r create_tables, message=FALSE, error=FALSE, warning=FALSE}
 
 ################################################################################
 # Transmission (long format)
@@ -388,7 +388,7 @@ alpha_annual_mean <- Mt.Wilson.alpha|>
 
 ### Overview transmission
 
-```{r message=FALSE, warning=FALSE, error=FALSE}
+```{r overview_transmission, message=FALSE, error=FALSE, warning=FALSE}
 
 ################################################################################
 # Overview (1905 - 1920)
@@ -425,7 +425,7 @@ Mt.Wilson.1905.1920.trans <- Mt.Wilson_long|>
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') +
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
   y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90) +  
-  labs(x = 'Date [year]', y = 'Transmittance [ ]') +
+  labs(x = 'Time [year]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
@@ -440,7 +440,7 @@ Mt.Wilson.1905.1920.trans
   
 Mt.Wilson.1912.trans <- Mt.Wilson_long|>
   # Change dates in the filter to zoom into another time period
-  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1913-01-01')) |>
+  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1912-12-31')) |>
   dplyr::filter(variable  != 'trans_900') |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
@@ -451,7 +451,7 @@ ggplot()+
   # Adapt labels
   annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
   y = 0.2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
-  labs(x = 'Months [1912]', y = 'Transmittance [ ]') +
+  labs(x = 'Time [months]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
@@ -554,7 +554,7 @@ annual_transmission
 
 ### Overview optical depth
 
-```{r warning=FALSE, error=FALSE, message=FALSE}
+```{r  Overview_od, warning=FALSE, error=FALSE, message=FALSE}
 ################################################################################
 # Overview (1905 - 1920)
 
@@ -629,7 +629,7 @@ Mt.Wilson.1912.od
 
 ### Boxplot
 
-```{r}
+```{r Boxplot_od, message=FALSE, error=FALSE, warning=FALSE}
 Mt.Wilson.boxplot.od <- Mt.Wilson_long|>
     dplyr::mutate_at(c('values'), ~-log(.))|>
     dplyr::filter(variable  != 'trans_900') |>  
@@ -652,7 +652,7 @@ Mt.Wilson.boxplot.od
 
 ### Monthly aggregated optical depth
 
-```{r}
+```{r  monthly_aggregated_od, message=FALSE, error=FALSE, warning=FALSE}
 optical_depth_overview <- optical_depth|>
   ggplot() +
   geom_point(aes(x = month, y = mean, color = variable)) +
@@ -670,7 +670,7 @@ optical_depth_overview
 
 ### Annual mean of the optical depth
 
-```{r}
+```{r Annual_aggregated_od, message=FALSE, error=FALSE, warning=FALSE}
 
 annual_od <- od_annual_mean|>
   ggplot()+
@@ -718,7 +718,7 @@ annual_od
 
 ### Overview (1905 - 1920)
 
-```{r message=FALSE, error=FALSE, warning=FALSE}
+```{r Overview_alpha, message=FALSE, error=FALSE, warning=FALSE}
 ################################################################################
 # Overview (1905 - 1920)
 
@@ -795,7 +795,7 @@ Mt.Wilson.1912.alpha
 
 ### Boxplot
 
-```{r}
+```{r Boxplot_alpha, message=FALSE, error=FALSE, warning=FALSE}
 Mt.Wilson.boxplot.alpha <- Mt.Wilson.alpha.long|>
     dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
                   (Date > as_date('1914-01-01') & Date < as_date('1918-01-01'))) |>
@@ -816,7 +816,7 @@ Mt.Wilson.boxplot.alpha
 
 ### Monthly aggregated Ångström parameter
 
-```{r  message=FALSE, error=FALSE, warning=FALSE}
+```{r Monhtly_aggregated_alpha, message=FALSE, error=FALSE, warning=FALSE}
 
 angstrom_overview <- Mt.Wilson.alpha.long|>
   dplyr::filter(Date > as_date('1912-05-01') & Date < as_date('1913-01-01'))|>
@@ -844,7 +844,7 @@ angstrom_overview
 
 ### Annual mean of the Ångström parameter
 
-```{r}
+```{r Annual_aggregated_alpha, message=FALSE, error=FALSE, warning=FALSE}
 annual_alpha <- alpha_annual_mean|>
   ggplot()+
   annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
@@ -891,7 +891,16 @@ annual_alpha
 
 ## Transmission
 
-```{r}
+```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
+pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1905.1920.trans.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1905.1920.trans
+dev.off()
+
+pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1912.trans.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1912.trans
+dev.off()
 
 pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.boxplot.pdf',
     width = 8, height = 5)
@@ -907,21 +916,20 @@ pdf('../analysis/Mt.Wilson/Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
-
-pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1905.1920.trans.pdf',
-    width = 8, height = 5)
-Mt.Wilson.1905.1920.trans
-dev.off()
-
-pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1912.trans.pdf',
-    width = 8, height = 5)
-Mt.Wilson.1912.trans
-dev.off()
 ```
 
 ## Optical depth
 
-```{r}
+```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
+pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1905.1920.od.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1905.1920.od 
+dev.off()
+
+pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1912.od.pdf',
+    width = 8, height = 5)
+Mt.Wilson.1912.od 
+dev.off()
 
 pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.boxplot.od.pdf',
     width = 8, height = 5)
@@ -933,16 +941,6 @@ pdf('../analysis/Mt.Wilson/Optical_depth/optical_depth_overview.pdf',
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1905.1920.trans.pdf',
-    width = 8, height = 5)
-Mt.Wilson.1905.1920.trans
-dev.off()
-
-pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1912.od.pdf',
-    width = 8, height = 5)
-Mt.Wilson.1912.od 
-dev.off()
-
 pdf('../analysis/Mt.Wilson/Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
@@ -951,8 +949,7 @@ dev.off()
 
 ## Ångström parameter
 
-```{r}
-
+```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
 pdf('../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.alpha.1905.1920.pdf',
     width = 8, height = 5)
 Mt.Wilson.alpha.1905.1920
