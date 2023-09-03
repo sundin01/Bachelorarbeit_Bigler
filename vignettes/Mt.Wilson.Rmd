@@ -17,6 +17,8 @@ editor_options:
 
 ## Read packages
 
+We read our R-script with all the packages we need.
+
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/General/packages.R")
 
@@ -26,6 +28,10 @@ conflicts_prefer(dplyr::mutate)
 
 ## Read data
 
+First, we read the data. After that, we rewrite the date in a proper US-way
+by using lubridate::ymd(). Further, we add a new column which contains the
+raw-number. Finally, we replace all -999 values with NA.
+
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
 Mt.Wilson.1905.1920 <- read.delim("../Data/Mt_Wilson_1.txt")
 
@@ -33,9 +39,6 @@ Mt.Wilson.1905.1906 <- read.delim("../Data/Mt_Wilson_2.txt")
 
 Mt.Wilson.1909.1912 <- read.delim("../Data/Mt_Wilson_3.txt")
 
-################################################################################
-# Mt. Wilson
-################################################################################
 
 Mt.Wilson.1905.1920 <- Mt.Wilson.1905.1920|>
   dplyr::mutate('Date' = lubridate::ymd(paste(Mt.Wilson.1905.1920$year,
@@ -48,7 +51,9 @@ Mt.Wilson.1905.1920 <- Mt.Wilson.1905.1920|>
 Mt.Wilson.1905.1920 <- replace(Mt.Wilson.1905.1920, Mt.Wilson.1905.1920 == -999, NA)
 ```
 
-## Slice and rebuild
+# Data-quality
+
+## Slice if necessary and rebuild
 
 Because there are shifts in the data sets, we must slice the table into
 sub-tables. After that, we can correct the shift and build it all back
@@ -108,27 +113,37 @@ Mt.Wilson_c <- Mt.Wilson.1905.1920|>
 Mt.Wilson <- rbind(Mt.Wilson_a, Mt.Wilson_b)
 
 Mt.Wilson <- rbind(Mt.Wilson, Mt.Wilson_c)
-
-# We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
-Mt.Wilson <- Mt.Wilson|>
-  dplyr::mutate(across(3:24, ~ifelse(.x > 2, NA, .x)))|>
-  dplyr::filter(trans_1000 > 0.7)
 ```
 
-## Dataquality
+## Errors
 
--   Transform data frame into a long format.
+Here, we create all our tables we need. We rename our columns, set new
+levels, create pivot tables or merge some tables. Further, we make some
+quality-control calls.
 
--   Set levels
+-   If any value in the data set greater than 2, then it must be a error
+    (because the wavelengths $\lambda\in[0.3, 1.6]$ and the transmission T
+    is $T \in[0, 1]$).
 
--   Substitute strange values with NA
+<!-- -->
+
+-   If a transmission value greater than 1, the it is impossible and we
+    replace the value with NA.
+
+-   If a transmission value smaller than 0.1, then it is possible but
+    unlikely and we replace the value with NA.
 
 ```{r create_tables, message=FALSE, error=FALSE, warning=FALSE}
 
 ################################################################################
 # Transmission (long format)
 ################################################################################
+# We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
+Mt.Wilson <- Mt.Wilson|>
+  dplyr::mutate(across(3:24, ~ifelse(.x > 2, NA, .x)))|>
+  dplyr::filter(trans_1000 > 0.7)
 
+################################################################################
 Mt.Wilson_long <- Mt.Wilson|>
   dplyr::select(c('Date', starts_with('t')))|>
   pivot_longer(cols = starts_with('t'),

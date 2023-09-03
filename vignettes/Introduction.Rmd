@@ -27,32 +27,26 @@ conflicts_prefer(ggplot2::annotate)
 
 Here, we read all digitized data sets. For a comprehensive analysis, it is
 important to have enough data. Therefore, only data sets containing more
-than 40 measurements are used. The following data sets were not considered:
+than 40 measurements are used. The following data sets were not considered
+in the analyisis:
 
--   Bassour (13 measurements)
+-   Bassour (only 13 measurements)
 
--   Mt. Whitney (5 Measurements)
+-   Mt. Whitney (only 5 Measurements)
 
--   Mt.Wilson (5 Measurements)
+-   Mt.Wilson (only 5 Measurements)
 
--   Mt. Wilson (20Measurements)
+-   Mt. Wilson (only 20Measurements)
 
--   Mt. Wilson (18 Measurements)
+-   Mt. Wilson (only 18 Measurements)
 
-```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Bassour.1911.1912 <- read.delim("../Data/Bassour.txt")
+```{r Read_all_data, message=FALSE, error=FALSE, warning=FALSE}
 
 Montezuma.1920.1930 <- read.delim("../Data/Montezuma.txt")
 
 Harqua_Hala.1920.1925 <- read.delim("../Data/Harqua_Hala.txt")
 
 Mt.Wilson.1905.1920 <- read.delim("../Data/Mt_Wilson_1.txt")
-
-Mt.Wilson.1905.1906 <- read.delim("../Data/Mt_Wilson_2.txt")
-
-Mt.Wilson.1909.1912 <- read.delim("../Data/Mt_Wilson_3.txt")
-
-Washington.1902.1904 <- read.delim("../Data/Washington_1.txt")
 
 Washington.1903.1907 <- read.delim("../Data/Washington_2.txt")
 
@@ -61,8 +55,6 @@ Hump_Mountain.1917.1918 <- read.delim("../Data/Hump_Mountain.txt")
 Calama.1918.1920 <- read.delim("../Data/Calama.txt")
 
 Mt.Brukkaros.1926.1930 <- read.delim("../Data/Mt_Brukkaros.txt")
-
-Mt.Whitney.1909.1910 <- read.delim("../Data/Mounth_Whitney.txt")
 
 Table.mountain.1925.1930 <- read.delim("../Data/Table_mountain.txt")
 ```
@@ -121,6 +113,8 @@ greenland.lon <- -51.06
 
 ## Visualize the locations
 
+### Summary of all locations
+
 Here, we create a tibble for all location. We need that for mapping the
 locations.
 
@@ -148,6 +142,8 @@ c(NA, NA ,2047, 3772, 1512, 1079, 551, 2711, 2250, 2286, 1721,
 "Legend" =
 c(rep("Ice core",2) ,rep("Volcano",5), rep("Observation station", 8)))
 ```
+
+### Mapping all locations
 
 ```{r mapping_locations, message=FALSE, error=FALSE, warning=FALSE}
 #read the world map
@@ -186,73 +182,82 @@ overview.plot
 dev.off()
 ```
 
-# Quality of the Data
+# Analyses of the various locations
 
-## Preparation
+Here you can find all analyzed locations. Run the code of the desired
+location and you will be automatically redirected to the desired document.
+Further, you will find a very brief summary of the time-period and the
+volcanic events.
 
-```{r Preparation_datasets, message=FALSE, error=FALSE, warning=FALSE}
+## Washington (1902 - 1907)
 
-################################################################################
-# Calama
-################################################################################
+Contains 44 measurements between 1902 - 1907 and information about the
+tropical eruption of Santa Maria in 1902-10-24.
 
-Calama.1918.1920 <- Calama.1918.1920|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Calama.1918.1920$year,
-                                              Calama.1918.1920$month,
-                                              Calama.1918.1920$day,
-                                              sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
-Calama.1918.1920 <- replace(Calama.1918.1920, Calama.1918.1920 == -999, NA)
+```{r open_washington}
+file.edit('../vignettes/Washington.Rmd')
+```
 
-################################################################################
-# Haraqua Hala
-################################################################################
+## Mt. Wilson (1905 - 1920)
 
-Harqua_Hala.1920.1925 <- Harqua_Hala.1920.1925|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Harqua_Hala.1920.1925$year,
-                                              Harqua_Hala.1920.1925$month,
-                                              Harqua_Hala.1920.1925$day,
-                                              sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
-Harqua_Hala.1920.1925 <- replace(Harqua_Hala.1920.1925, Harqua_Hala.1920.1925 == -999, NA)
+Contains 1245 measurements between 1905 - 1920 and information about the
+following high latitude eruptions: Ksudach in 1907-03-28, Novarupta in
+1912-06-06 and Katla in 1918-10-12.
 
-################################################################################
-# Hump Mountain
-################################################################################
+```{r open_mt.wilson}
+file.edit('../vignettes/Mt.Wilson.Rmd')
+```
 
-Hump_Mountain.1917.1918 <- Hump_Mountain.1917.1918|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Hump_Mountain.1917.1918$year,
-                                              Hump_Mountain.1917.1918$month,
-                                              Hump_Mountain.1917.1918$day,
-                                              sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
-Hump_Mountain.1917.1918 <- replace(Hump_Mountain.1917.1918, 
-                                   Hump_Mountain.1917.1918 == -999, NA)
+## Hump Mountain (1917 -1918)
 
+Contains 58 measurements between 1917 - 1918 and information about the high
+latitude eruption of Katla in 1918-10-12.
 
-################################################################################
-# Mt. Brukkaros
-################################################################################
+```{r open_hump_mountain}
+file.edit('../vignettes/Hump_Mountain.Rmd')
+```
 
-Mt.Brukkaros.1926.1930 <- Mt.Brukkaros.1926.1930|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Mt.Brukkaros.1926.1930$year,
-                                            Mt.Brukkaros.1926.1930$month,
-                                            Mt.Brukkaros.1926.1930$day,
-                                            sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
-Mt.Brukkaros.1926.1930 <- replace(Mt.Brukkaros.1926.1930, Mt.Brukkaros.1926.1930 == -999, NA)
+## Calama (1918 - 1920)
 
-################################################################################
-# Table Mountain
-################################################################################
+Contains 226 measurements between 1920 - 1925 and information about the
+high latitude eruption of Katla in 1918-10-12.
 
-Table.mountain.1925.1930 <- Table.mountain.1925.1930|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Table.mountain.1925.1930$year,
-                                              Table.mountain.1925.1930$month,
-                                              Table.mountain.1925.1930$day,
-                                              sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
+```{r open_calama}
+file.edit('../vignettes/Calama.Rmd')
+```
 
-Table.mountain.1925.1930 <- replace(Table.mountain.1925.1930, 
-                                    Table.mountain.1925.1930 == -999, NA)
+## Haraqua Hala (1920 - 1925)
+
+Contains 226 measurements between 1920 - 1925 and information about the
+high latitude eruption of Raikoke in 1924-02-15.
+
+```{r open_haraqua_hala}
+file.edit('../vignettes/Haraqua_Hala.Rmd')
+```
+
+## Montezuma (1920 - 1930)
+
+Contains 462 measurements between 1920 - 1930 and information about the
+high latitude eruption of Raikoke in 1924-02-15.
+
+```{r open_montezuma}
+file.edit('../vignettes/Montezuma.Rmd')
+```
+
+## Table Mountain (1925 - 1930)
+
+Contains 445 measurements between 1925 - 1930 and information about the
+high latitude eruption of Raikoke in 1924-02-15.
+
+```{r open_table_mountain}
+file.edit('../vignettes/Table_Mountain.Rmd')
+```
+
+## Mt. Brukkaros (1926 - 1930)
+
+Contains 203 measurements between 1926 - 1930 and information about the
+high latitude eruption of Raikoke in 1924-02-15.
+
+```{r open_Mt.Brukkaros}
+file.edit('../vignettes/Mt_Brukkaros.Rmd')
 ```
