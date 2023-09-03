@@ -180,7 +180,7 @@ overview.plot <- ggplot() +
 
 overview.plot
 
-pdf('../analysis/map.pdf',
+pdf('../analysis/General/map.pdf',
     width = 8, height = 5)
 overview.plot
 dev.off()
@@ -229,16 +229,6 @@ Hump_Mountain.1917.1918 <- Hump_Mountain.1917.1918|>
 Hump_Mountain.1917.1918 <- replace(Hump_Mountain.1917.1918, 
                                    Hump_Mountain.1917.1918 == -999, NA)
 
-################################################################################
-# Montezuma
-################################################################################
-
-Montezuma.1920.1930 <- Montezuma.1920.1930|>
-  dplyr::mutate('Date' = lubridate::ymd(paste(Montezuma.1920.1930$year,
-                                              Montezuma.1920.1930$month,
-                                              Montezuma.1920.1930$day,
-                                              sep = ' ')))|>
-  dplyr::select(-c('year', 'month', 'day'))
 
 ################################################################################
 # Mt. Brukkaros

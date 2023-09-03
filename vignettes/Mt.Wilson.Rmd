@@ -70,12 +70,7 @@ Mt.Wilson_a <- Mt.Wilson.1905.1920|>
                 'trans_1200' = 'transmission9....100.',
                 'trans_1600' = 'transmission10....100.')|>
   dplyr::mutate('lambda_350' = 0.35, 'trans_350' = NA)|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 
-                  'lambda_600', 'trans_600', 'lambda_700', 'trans_700', 
-                  'lambda_800', 'trans_800', 'lambda_900', 'trans_900', 
-                  'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
+  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
 
 Mt.Wilson_b <- Mt.Wilson.1905.1920|>
   slice(122:563)|>
@@ -91,12 +86,7 @@ Mt.Wilson_b <- Mt.Wilson.1905.1920|>
                 'trans_800' = 'transmission7....100.','trans_900' = 'transmission8....100.',
                 'trans_1000' = 'transmission9....100.','trans_1200' = 'transmission10....100.',
                 'trans_1600' = 'transmission11....100.')|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 
-                  'lambda_600', 'trans_600', 'lambda_700', 'trans_700', 
-                  'lambda_800', 'trans_800', 'lambda_900', 'trans_900', 
-                  'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
+  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
 
 Mt.Wilson_c <- Mt.Wilson.1905.1920|>
   slice(564:1245)|>
@@ -112,11 +102,7 @@ Mt.Wilson_c <- Mt.Wilson.1905.1920|>
                 'trans_1200' = 'transmission9....100.',
                 'trans_1600' = 'transmission10....100.',)|>
   dplyr::mutate('lambda_900' = 0.9, 'trans_900' = NA)|>
-  dplyr::select(c('row', 'Date','lambda_350', 'trans_350','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 'lambda_600', 
-                  'trans_600','lambda_700', 'trans_700', 'lambda_800', 'trans_800',
-                  'lambda_900', 'trans_900', 'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
+  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
 
 # We buil all back together
 Mt.Wilson <- rbind(Mt.Wilson_a, Mt.Wilson_b)

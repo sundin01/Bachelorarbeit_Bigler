@@ -72,12 +72,7 @@ Washington <- Washington.1902.1907|>
                 'trans_900' = 'transmission7....100.','trans_1000' = 'transmission8....100.',
                 'trans_1200' = 'transmission9....100.',
                 'trans_1600' = 'transmission10....100.')|>
-  dplyr::select(c('row', 'Date','lambda_400','trans_400',
-                  'lambda_450','trans_450', 'lambda_500', 'trans_500', 
-                  'lambda_600', 'trans_600', 'lambda_700', 'trans_700', 
-                  'lambda_800', 'trans_800', 'lambda_900', 'trans_900', 
-                  'lambda_1000', 'trans_1000',
-                  'lambda_1200', 'trans_1200', 'lambda_1600', 'trans_1600'))
+  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
 
 # We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
 Washington <- Washington|>
