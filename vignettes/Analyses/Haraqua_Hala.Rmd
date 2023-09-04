@@ -20,7 +20,7 @@ editor_options:
 We read our R-script with all the packages we need.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -36,7 +36,7 @@ by using lubridate::ymd(). Further, we add a new column which contains the
 raw-number. Finally, we replace all -999 values with NA.
 
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Harqua_Hala.1920.1925 <- read.delim("../Data/Harqua_Hala.txt")
+Harqua_Hala.1920.1925 <- read.delim("../../Data/Harqua_Hala.txt")
 
 Harqua_Hala.1920.1925 <- Harqua_Hala.1920.1925|>
   dplyr::mutate('Date' = lubridate::ymd(paste(Harqua_Hala.1920.1925$year,
@@ -686,7 +686,7 @@ annual_alpha <- alpha_annual_mean|>
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
   y = .2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2,angle = 90,alpha = 0.5) +
-  labs(x = 'Time [1920 - 1930]', y = 'Annual mean of the Ångström parameter [ ]') +
+  labs(x = 'Time [1920 - 1925]', y = 'Annual mean of the Ångström parameter [ ]') +
   scale_y_continuous(limits = c(-.05, .2)) +
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3, alpha = 1), title = "Wavelength [nm]"),
@@ -703,27 +703,27 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.1920.1925.trans.pdf',
+pdf('../../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.1920.1925.trans.pdf',
     width = 8, height = 5)
 Haraqua_Hala.1920.1925.trans
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.1924.trans.pdf',
+pdf('../../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.1924.trans.pdf',
     width = 8, height = 5)
 Haraqua_Hala.1924.trans
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.boxplot.pdf',
+pdf('../../analysis/Haraqua_Hala//Transmission/Haraqua_Hala.boxplot.pdf',
     width = 8, height = 5)
 Haraqua_Hala.boxplot
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Transmission/transmission_overview.pdf',
+pdf('../../analysis/Haraqua_Hala//Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Transmission/annual_transmission.pdf',
+pdf('../../analysis/Haraqua_Hala//Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -732,27 +732,27 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.1920.1925.od.pdf',
+pdf('../../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.1920.1925.od.pdf',
     width = 8, height = 5)
 Haraqua_Hala.1920.1925.od
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.1924.od.pdf',
+pdf('../../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.1924.od.pdf',
     width = 8, height = 5)
 Haraqua_Hala.1924.od 
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.boxplot.od.pdf',
+pdf('../../analysis/Haraqua_Hala//Optical_depth/Haraqua_Hala.boxplot.od.pdf',
     width = 8, height = 5)
 Haraqua_Hala.boxplot.od
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Haraqua_Hala//Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Optical_depth/annual_od.pdf',
+pdf('../../analysis/Haraqua_Hala//Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -761,27 +761,27 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.alpha.1920.1925.pdf',
+pdf('../../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.alpha.1920.1925.pdf',
     width = 8, height = 5)
 Haraqua_Hala.alpha.1920.1925
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.1924.alpha.pdf',
+pdf('../../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.1924.alpha.pdf',
     width = 8, height = 5)
 Haraqua_Hala.1924.alpha
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.boxplot.alpha.pdf',
+pdf('../../analysis/Haraqua_Hala//Angstrom_parameter/Haraqua_Hala.boxplot.alpha.pdf',
     width = 8, height = 5)
 Haraqua_Hala.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Haraqua_Hala//Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Haraqua_Hala//Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Haraqua_Hala//Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()

@@ -20,7 +20,7 @@ editor_options:
 We read our R-script with all the packages we need.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -37,7 +37,7 @@ raw-number. Finally, we replace all -999 values with NA.
 
 ```{r}
 
-Table.mountain.1925.1930 <- read.delim("../Data/Table_mountain.txt")
+Table.mountain.1925.1930 <- read.delim("../../Data/Table_mountain.txt")
 
 Table.mountain.1925.1930 <- Table.mountain.1925.1930|>
   dplyr::mutate('Date' = lubridate::ymd(paste(Table.mountain.1925.1930$year,
@@ -569,22 +569,22 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Table_mountain//Transmission/Table_mountain.1925.1930.trans.pdf',
+pdf('../../analysis/Table_mountain//Transmission/Table_mountain.1925.1930.trans.pdf',
     width = 8, height = 5)
 Table_mountain.1925.1930.trans
 dev.off()
 
-pdf('../analysis/Table_mountain//Transmission/Table_mountain.boxplot.pdf',
+pdf('../../analysis/Table_mountain//Transmission/Table_mountain.boxplot.pdf',
     width = 8, height = 5)
 Table_mountain.boxplot
 dev.off()
 
-pdf('../analysis/Table_mountain//Transmission/transmission_overview.pdf',
+pdf('../../analysis/Table_mountain//Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Table_mountain//Transmission/annual_transmission.pdf',
+pdf('../../analysis/Table_mountain//Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -593,22 +593,22 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Table_mountain//Optical_depth/Table_mountain.1925.1930.od.pdf',
+pdf('../../analysis/Table_mountain//Optical_depth/Table_mountain.1925.1930.od.pdf',
     width = 8, height = 5)
 Table_mountain.1925.1930.od
 dev.off()
 
-pdf('../analysis/Table_mountain//Optical_depth/Table_mountain.boxplot.od.pdf',
+pdf('../../analysis/Table_mountain//Optical_depth/Table_mountain.boxplot.od.pdf',
     width = 8, height = 5)
 Table_mountain.boxplot.od
 dev.off()
 
-pdf('../analysis/Table_mountain//Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Table_mountain//Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Table_mountain//Optical_depth/annual_od.pdf',
+pdf('../../analysis/Table_mountain//Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -617,22 +617,22 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Table_mountain//Angstrom_parameter/Table_mountain.alpha.1925.1930.pdf',
+pdf('../../analysis/Table_mountain//Angstrom_parameter/Table_mountain.alpha.1925.1930.pdf',
     width = 8, height = 5)
 Table_mountain.alpha.1925.1930
 dev.off()
 
-pdf('../analysis/Table_mountain//Angstrom_parameter/Table_mountain.boxplot.alpha.pdf',
+pdf('../../analysis/Table_mountain//Angstrom_parameter/Table_mountain.boxplot.alpha.pdf',
     width = 8, height = 5)
 Table_mountain.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Table_mountain//Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Table_mountain//Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Table_mountain//Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Table_mountain//Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()

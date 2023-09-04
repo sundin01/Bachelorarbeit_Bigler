@@ -18,7 +18,7 @@ editor_options:
 ## Read packages
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -30,9 +30,9 @@ conflicts_prefer(stringr::fixed)
 ## Read data
 
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Washington.1902.1907 <- read.delim("../Data/Washington_1.txt")
+Washington.1902.1907 <- read.delim("../../Data/Washington_1.txt")
 
-Washington.1903.1907 <- read.delim("../Data/Washington_2.txt")
+Washington.1903.1907 <- read.delim("../../Data/Washington_2.txt")
 
 ################################################################################
 # Washington
@@ -673,7 +673,7 @@ annual_alpha <- alpha_annual_mean|>
   geom_line(aes(x = month, y = values, color = variable), size = 0.1) +  
   geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
   annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = .2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2,angle = 90,alpha = 0.5) +
+  y = .2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2,angle = 90, alpha = 0.5) +
   labs(x = 'Time [1902 - 1907]', y = 'Annual mean of the Ångström parameter [ ]') +
   scale_y_continuous(limits = c(-.05, .2)) +
   scale_color_viridis_d(option = "viridis",
@@ -689,27 +689,27 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Washington//Transmission/Washington.1902.1907.trans.pdf',
+pdf('../../analysis/Washington//Transmission/Washington.1902.1907.trans.pdf',
     width = 8, height = 5)
 Washington.1902.1907.trans
 dev.off()
 
-pdf('../analysis/Washington//Transmission/Washington.1903.trans.pdf',
+pdf('../../analysis/Washington//Transmission/Washington.1903.trans.pdf',
     width = 8, height = 5)
 Washington.1903.trans
 dev.off()
 
-pdf('../analysis/Washington//Transmission/Washington.boxplot.pdf',
+pdf('../../analysis/Washington//Transmission/Washington.boxplot.pdf',
     width = 8, height = 5)
 Washington.boxplot
 dev.off()
 
-pdf('../analysis/Washington//Transmission/transmission_overview.pdf',
+pdf('../../analysis/Washington//Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Washington//Transmission/annual_transmission.pdf',
+pdf('../../analysis/Washington//Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -718,27 +718,27 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Washington//Optical_depth/Washington.1902.1907.od.pdf',
+pdf('../../analysis/Washington//Optical_depth/Washington.1902.1907.od.pdf',
     width = 8, height = 5)
 Washington.1902.1907.od
 dev.off()
 
-pdf('../analysis/Washington//Optical_depth/Washington.1903.od .pdf',
+pdf('../../analysis/Washington//Optical_depth/Washington.1903.od .pdf',
     width = 8, height = 5)
 Washington.1903.od 
 dev.off()
 
-pdf('../analysis/Washington//Optical_depth/Washington.boxplot.alpha.pdf',
+pdf('../../analysis/Washington//Optical_depth/Washington.boxplot.alpha.pdf',
     width = 8, height = 5)
 Washington.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Washington//Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Washington//Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Washington//Optical_depth/annual_od.pdf',
+pdf('../../analysis/Washington//Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -747,27 +747,27 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Washington//Angstrom_parameter/Washington.alpha.1902.1907.pdf',
+pdf('../../analysis/Washington//Angstrom_parameter/Washington.alpha.1902.1907.pdf',
     width = 8, height = 5)
 Washington.alpha.1902.1907
 dev.off()
 
-pdf('../analysis/Washington//Angstrom_parameter/Washington.1903.alpha.pdf',
+pdf('../../analysis/Washington//Angstrom_parameter/Washington.1903.alpha.pdf',
     width = 8, height = 5)
 Washington.1903.alpha
 dev.off()
 
-pdf('../analysis/Washington//Angstrom_parameter/Washington.boxplot.alpha.pdf',
+pdf('../../analysis/Washington//Angstrom_parameter/Washington.boxplot.alpha.pdf',
     width = 8, height = 5)
 Washington.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Washington//Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Washington//Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Washington//Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Washington//Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()

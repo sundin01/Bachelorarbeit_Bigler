@@ -20,7 +20,7 @@ editor_options:
 We read our R-script with all the packages we need.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -33,11 +33,11 @@ by using lubridate::ymd(). Further, we add a new column which contains the
 raw-number. Finally, we replace all -999 values with NA.
 
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Mt.Wilson.1905.1920 <- read.delim("../Data/Mt_Wilson_1.txt")
+Mt.Wilson.1905.1920 <- read.delim("../../Data/Mt_Wilson_1.txt")
 
-Mt.Wilson.1905.1906 <- read.delim("../Data/Mt_Wilson_2.txt")
+Mt.Wilson.1905.1906 <- read.delim("../../Data/Mt_Wilson_2.txt")
 
-Mt.Wilson.1909.1912 <- read.delim("../Data/Mt_Wilson_3.txt")
+Mt.Wilson.1909.1912 <- read.delim("../../Data/Mt_Wilson_3.txt")
 
 
 Mt.Wilson.1905.1920 <- Mt.Wilson.1905.1920|>
@@ -75,7 +75,7 @@ Mt.Wilson_a <- Mt.Wilson.1905.1920|>
                 'trans_1200' = 'transmission9....100.',
                 'trans_1600' = 'transmission10....100.')|>
   dplyr::mutate('lambda_350' = 0.35, 'trans_350' = NA)|>
-  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
+  dplyr::select(c('row', 'Date', starts_with('lambda_'), starts_with('trans_')))
 
 Mt.Wilson_b <- Mt.Wilson.1905.1920|>
   slice(122:563)|>
@@ -91,7 +91,7 @@ Mt.Wilson_b <- Mt.Wilson.1905.1920|>
                 'trans_800' = 'transmission7....100.','trans_900' = 'transmission8....100.',
                 'trans_1000' = 'transmission9....100.','trans_1200' = 'transmission10....100.',
                 'trans_1600' = 'transmission11....100.')|>
-  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
+    dplyr::select(c('row', 'Date', starts_with('lambda_'), starts_with('trans_')))
 
 Mt.Wilson_c <- Mt.Wilson.1905.1920|>
   slice(564:1245)|>
@@ -107,7 +107,7 @@ Mt.Wilson_c <- Mt.Wilson.1905.1920|>
                 'trans_1200' = 'transmission9....100.',
                 'trans_1600' = 'transmission10....100.',)|>
   dplyr::mutate('lambda_900' = 0.9, 'trans_900' = NA)|>
-  dplyr::select(c('row', 'Date', starts_with('l'), starts_with('t')))
+  dplyr::select(c('row', 'Date', starts_with('lambda_'), starts_with('trans_')))
 
 # We buil all back together
 Mt.Wilson <- rbind(Mt.Wilson_a, Mt.Wilson_b)
@@ -124,12 +124,8 @@ quality-control calls.
 -   If any value in the data set greater than 2, then it must be a error
     (because the wavelengths $\lambda\in[0.3, 1.6]$ and the transmission T
     is $T \in[0, 1]$).
-
-<!-- -->
-
 -   If a transmission value greater than 1, the it is impossible and we
     replace the value with NA.
-
 -   If a transmission value smaller than 0.1, then it is possible but
     unlikely and we replace the value with NA.
 
@@ -419,13 +415,13 @@ Mt.Wilson.1905.1920.trans <- Mt.Wilson_long|>
   geom_smooth(aes(x = Date, y = values, color = variable), se = FALSE) +
   geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +
   annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = 0, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90) + 
+  y = 0, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
   geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
   annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
+  y = 0, label= "Katmai [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') +
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90) +  
+  y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
   labs(x = 'Time [year]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
@@ -451,7 +447,7 @@ ggplot()+
   geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
   # Adapt labels
   annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 0.2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90) +
+  y = 0.2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
   labs(x = 'Time [months]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
@@ -893,27 +889,27 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1905.1920.trans.pdf',
-    width = 8, height = 5)
+pdf('../../analysis/Mt.Wilson/Transmission/Mt.Wilson.1905.1920.trans.pdf',
+    width = 25 / 2.54, height = 15 / 2.54)
 Mt.Wilson.1905.1920.trans
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.1912.trans.pdf',
-    width = 8, height = 5)
+pdf('../../analysis/Mt.Wilson/Transmission/Mt.Wilson.1912.trans.pdf',
+    width = 8  , height = 5)
 Mt.Wilson.1912.trans
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Transmission/Mt.Wilson.boxplot.pdf',
+pdf('../../analysis/Mt.Wilson/Transmission/Mt.Wilson.boxplot.pdf',
     width = 8, height = 5)
 Mt.Wilson.boxplot
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Transmission/transmission_overview.pdf',
+pdf('../../analysis/Mt.Wilson/Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Transmission/annual_transmission.pdf',
+pdf('../../analysis/Mt.Wilson/Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -922,27 +918,27 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1905.1920.od.pdf',
+pdf('../../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1905.1920.od.pdf',
     width = 8, height = 5)
 Mt.Wilson.1905.1920.od 
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1912.od.pdf',
+pdf('../../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.1912.od.pdf',
     width = 8, height = 5)
 Mt.Wilson.1912.od 
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.boxplot.od.pdf',
+pdf('../../analysis/Mt.Wilson/Optical_depth/Mt.Wilson.boxplot.od.pdf',
     width = 8, height = 5)
 Mt.Wilson.boxplot.od
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Mt.Wilson/Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Optical_depth/annual_od.pdf',
+pdf('../../analysis/Mt.Wilson/Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -951,27 +947,27 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.alpha.1905.1920.pdf',
+pdf('../../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.alpha.1905.1920.pdf',
     width = 8, height = 5)
 Mt.Wilson.alpha.1905.1920
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.1912.alpha.pdf',
+pdf('../../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.1912.alpha.pdf',
     width = 8, height = 5)
 Mt.Wilson.1912.alpha
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.boxplot.alpha.pdf',
+pdf('../../analysis/Mt.Wilson/Angstrom_parameter/Mt.Wilson.boxplot.alpha.pdf',
     width = 8, height = 5)
 Mt.Wilson.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Mt.Wilson/Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Mt.Wilson/Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Mt.Wilson/Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()

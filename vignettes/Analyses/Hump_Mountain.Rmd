@@ -20,7 +20,7 @@ editor_options:
 We read our R-script with all the packages we need.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -36,7 +36,7 @@ by using lubridate::ymd(). Further, we add a new column which contains the
 raw-number. Finally, we replace all -999 values with NA.
 
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Hump_Mountain.1917.1918 <- read.delim("../Data/Hump_Mountain.txt")
+Hump_Mountain.1917.1918 <- read.delim("../../Data/Hump_Mountain.txt")
 
 Hump_Mountain.1917.1918 <- Hump_Mountain.1917.1918|>
   dplyr::mutate('Date' = lubridate::ymd(paste(Hump_Mountain.1917.1918$year,
@@ -573,22 +573,22 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Hump_Mountain//Transmission/Hump_Mountain.1917.1918.trans.pdf',
+pdf('../../analysis/Hump_Mountain//Transmission/Hump_Mountain.1917.1918.trans.pdf',
     width = 8, height = 5)
 Hump_Mountain.1917.1918.trans
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Transmission/Hump_Mountain.boxplot.pdf',
+pdf('../../analysis/Hump_Mountain//Transmission/Hump_Mountain.boxplot.pdf',
     width = 8, height = 5)
 Hump_Mountain.boxplot
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Transmission/transmission_overview.pdf',
+pdf('../../analysis/Hump_Mountain//Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Transmission/annual_transmission.pdf',
+pdf('../../analysis/Hump_Mountain//Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -597,22 +597,22 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.1917.1918.od.pdf',
+pdf('../../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.1917.1918.od.pdf',
     width = 8, height = 5)
 Hump_Mountain.1917.1918.od
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.boxplot.od.pdf',
+pdf('../../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.boxplot.od.pdf',
     width = 8, height = 5)
 Hump_Mountain.boxplot.od
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Hump_Mountain//Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Optical_depth/annual_od.pdf',
+pdf('../../analysis/Hump_Mountain//Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -621,22 +621,22 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.alpha.1917.1918.pdf',
+pdf('../../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.alpha.1917.1918.pdf',
     width = 8, height = 5)
 Hump_Mountain.alpha.1917.1918
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.boxplot.alpha.pdf',
+pdf('../../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.boxplot.alpha.pdf',
     width = 8, height = 5)
 Hump_Mountain.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Hump_Mountain//Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Hump_Mountain//Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Hump_Mountain//Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()

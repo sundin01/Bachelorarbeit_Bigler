@@ -20,7 +20,7 @@ editor_options:
 We read our R-script with all the packages we need.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
-source("../R/General/packages.R")
+source("../../R/General/packages.R")
 
 conflicts_prefer(ggplot2::annotate)
 conflicts_prefer(dplyr::mutate)
@@ -36,7 +36,7 @@ by using lubridate::ymd(). Further, we add a new column which contains the
 raw-number. Finally, we replace all -999 values with NA.
 
 ```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
-Mt.Brukkaros.1926.1930 <- read.delim("../Data/Mt_Brukkaros.txt")
+Mt.Brukkaros.1926.1930 <- read.delim("../../Data/Mt_Brukkaros.txt")
 
 Mt.Brukkaros.1926.1930 <- Mt.Brukkaros.1926.1930|>
   dplyr::mutate('Date' = lubridate::ymd(paste(Mt.Brukkaros.1926.1930$year,
@@ -569,22 +569,22 @@ annual_alpha
 ## Transmission
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Brukkaros//Transmission/Mt.Brukkaros.1926.1930.trans.pdf',
+pdf('../../analysis/Mt.Brukkaros//Transmission/Mt.Brukkaros.1926.1930.trans.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.1926.1930.trans
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Transmission/Mt.Brukkaros.boxplot.pdf',
+pdf('../../analysis/Mt.Brukkaros//Transmission/Mt.Brukkaros.boxplot.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.boxplot
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Transmission/transmission_overview.pdf',
+pdf('../../analysis/Mt.Brukkaros//Transmission/transmission_overview.pdf',
     width = 8, height = 5)
 transmission_overview
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Transmission/annual_transmission.pdf',
+pdf('../../analysis/Mt.Brukkaros//Transmission/annual_transmission.pdf',
     width = 8, height = 5)
 annual_transmission
 dev.off()
@@ -593,22 +593,22 @@ dev.off()
 ## Optical depth
 
 ```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Brukkaros//Optical_depth/Mt.Brukkaros.1926.1930.od.pdf',
+pdf('../../analysis/Mt.Brukkaros//Optical_depth/Mt.Brukkaros.1926.1930.od.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.1926.1930.od
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Optical_depth/Mt.Brukkaros.boxplot.od.pdf',
+pdf('../../analysis/Mt.Brukkaros//Optical_depth/Mt.Brukkaros.boxplot.od.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.boxplot.od
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Optical_depth/optical_depth_overview.pdf',
+pdf('../../analysis/Mt.Brukkaros//Optical_depth/optical_depth_overview.pdf',
     width = 8, height = 5)
 optical_depth_overview
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Optical_depth/annual_od.pdf',
+pdf('../../analysis/Mt.Brukkaros//Optical_depth/annual_od.pdf',
     width = 8, height = 5)
 annual_od
 dev.off()
@@ -617,22 +617,22 @@ dev.off()
 ## Ångström parameter
 
 ```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
-pdf('../analysis/Mt.Brukkaros//Angstrom_parameter/Mt.Brukkaros.alpha.1926.1930.pdf',
+pdf('../../analysis/Mt.Brukkaros//Angstrom_parameter/Mt.Brukkaros.alpha.1926.1930.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.alpha.1926.1930
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Angstrom_parameter/Mt.Brukkaros.boxplot.alpha.pdf',
+pdf('../../analysis/Mt.Brukkaros//Angstrom_parameter/Mt.Brukkaros.boxplot.alpha.pdf',
     width = 8, height = 5)
 Mt.Brukkaros.boxplot.alpha
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Angstrom_parameter/angstrom_overview.pdf',
+pdf('../../analysis/Mt.Brukkaros//Angstrom_parameter/angstrom_overview.pdf',
     width = 8, height = 5)
 angstrom_overview
 dev.off()
 
-pdf('../analysis/Mt.Brukkaros//Angstrom_parameter/annual_alpha.pdf',
+pdf('../../analysis/Mt.Brukkaros//Angstrom_parameter/annual_alpha.pdf',
     width = 8, height = 5)
 annual_alpha
 dev.off()
