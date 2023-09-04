@@ -1,0 +1,643 @@
+---
+title: "Bachelorarbeit: Hump_Mountain"
+author: "Patrick Bigler"
+date: "2023-09-03"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+  '': default
+editor_options:
+  markdown:
+    wrap: 75
+---
+
+# Introduction
+
+## Read packages
+
+We read our R-script with all the packages we need.
+
+```{r Package, message=FALSE, error=FALSE, warning=FALSE}
+source("../R/General/packages.R")
+
+conflicts_prefer(ggplot2::annotate)
+conflicts_prefer(dplyr::mutate)
+conflicts_prefer(lubridate::stamp)
+conflicts_prefer(recipes::fixed)
+conflicts_prefer(yardstick::rmse)
+```
+
+## Read data
+
+First, we read the data. After that, we rewrite the date in a proper US-way
+by using lubridate::ymd(). Further, we add a new column which contains the
+raw-number. Finally, we replace all -999 values with NA.
+
+```{r Read_data, message=FALSE, error=FALSE, warning=FALSE}
+Hump_Mountain.1917.1918 <- read.delim("../Data/Hump_Mountain.txt")
+
+Hump_Mountain.1917.1918 <- Hump_Mountain.1917.1918|>
+  dplyr::mutate('Date' = lubridate::ymd(paste(Hump_Mountain.1917.1918$year,
+                                              Hump_Mountain.1917.1918$month,
+                                              Hump_Mountain.1917.1918$day,
+                                              sep = ' ')))|>
+  dplyr::mutate(row = seq(1 : length(Hump_Mountain.1917.1918$Location)))|>  
+  dplyr::select(-c('year', 'month', 'day'))
+
+Hump_Mountain.1917.1918  <- replace(Hump_Mountain.1917.1918, 
+                                    Hump_Mountain.1917.1918 == -999, NA)
+
+```
+
+# Data-quality
+
+## Rename columns
+
+Because there are shifts in the data sets, we must slice the table into
+sub-tables. After that, we can correct the shift and build it all back
+together. Simultaneously, we change the column names.
+
+```{r Preparation_Hump_Mountain, message=FALSE, error=FALSE, warning=FALSE}
+Hump_Mountain <- Hump_Mountain.1917.1918|>
+  dplyr::rename('lambda_349' = 'lambda1...m.', 'lambda_395' = 'lambda2...m.',
+                'lambda_450' = 'lambda3...m.', 'lambda_499' = 'lambda4...m.',
+                'lambda_621' = 'lambda5...m.','lambda_714' = 'lambda6...m.',
+                'lambda_803' = 'lambda7...m.','lambda_977' = 'lambda8...m.',
+                'lambda_1214' = 'lambda9...m.','lambda_1593' = 'lambda10...m.',
+                'trans_349' = 'transmission1....100.', 'trans_395' = 'transmission2....100.',
+                'trans_450' = 'transmission3....100.','trans_499' = 'transmission4....100.',
+                'trans_621' = 'transmission5....100.','trans_714' = 'transmission6....100.',
+                'trans_803' = 'transmission7....100.','trans_977' = 'transmission8....100.',
+                'trans_1214' = 'transmission9....100.',
+                'trans_1593' = 'transmission10....100.')|>
+  dplyr::select(c('row', 'Date', starts_with('la'), starts_with('t')))
+```
+
+## Errors, slice if necessary and rebuild
+
+Here, we create all our tables we need. We rename our columns, set new
+levels, create pivot tables or merge some tables. Further, we make some
+quality-control calls.
+
+-   If any value in the data set greater than 2, then it must be a error
+    (because the wavelengths $\lambda\in[0.3, 1.6]$ and the transmission T
+    is $T \in[0, 1]$).
+
+<!-- -->
+
+-   If a transmission value greater than 1, the it is impossible and we
+    replace the value with NA.
+
+-   If a transmission value smaller than 0.1, then it is possible but
+    unlikely and we replace the value with NA.
+
+```{r create_tables, message=FALSE, error=FALSE, warning=FALSE}
+################################################################################
+# Transmission (long format)
+################################################################################
+# We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
+Hump_Mountain <- Hump_Mountain|>
+  dplyr::mutate(across(3:22, ~ifelse(.x > 2, NA, .x)))
+
+################################################################################
+Hump_Mountain_long <- Hump_Mountain|>
+  dplyr::select(c('Date', starts_with('t')))|>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate('lambda' = rep(c('349', '395', '450', '499', '621', 
+                                 '714','803', '977', '1214', '1593'), times = 58))|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_349", "trans_395", "trans_450", 
+                           "trans_499", "trans_621", "trans_714", "trans_803",
+                           "trans_977", "trans_1214", "trans_1593")))|>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
+
+################################################################################
+prep.mean <- Hump_Mountain|>
+  group_by(month = lubridate::month(Date, label = TRUE))|>
+  dplyr::summarise(Date = Date, 
+                   '349' = mean(trans_349, na.rm = TRUE),                   
+                   '395' = mean(trans_395, na.rm = TRUE),                  
+                   '450' = mean(trans_450, na.rm = TRUE),                   
+                   '499' = mean(trans_499, na.rm = TRUE),                   
+                   '621' = mean(trans_621, na.rm = TRUE),                   
+                   '714' = mean(trans_714, na.rm = TRUE),   
+                   '803' = mean(trans_803, na.rm = TRUE), 
+                   '977' = mean(trans_977, na.rm = TRUE),                   
+                   '1214' = mean(trans_1214, na.rm = TRUE),
+                   '1593' = mean(trans_1593, na.rm = TRUE))|>
+  pivot_longer(cols = -c('month', 'Date'), 
+               names_to = 'variable', values_to = 'value')
+
+prep.std <- Hump_Mountain|>
+  group_by(month = lubridate::month(Date, label = TRUE))|>
+  dplyr::summarise(Date = Date,
+                   'std_349' = sd(trans_349, na.rm = TRUE),                   
+                   'std_395' = sd(trans_395, na.rm = TRUE),                  
+                   'std_450' = sd(trans_450, na.rm = TRUE),                   
+                   'std_499' = sd(trans_499, na.rm = TRUE),                   
+                   'std_621' = sd(trans_621, na.rm = TRUE),                   
+                   'std_714' = sd(trans_714, na.rm = TRUE),   
+                   'std_803' = sd(trans_803, na.rm = TRUE), 
+                   'std_977' = sd(trans_977, na.rm = TRUE),                   
+                   'std_1214' = sd(trans_1214, na.rm = TRUE),
+                   'std_1593' = sd(trans_1593, na.rm = TRUE)) |>
+  pivot_longer(cols = -c('month', 'Date'), 
+               names_to = 'variable', values_to = 'value')
+
+transmission <- inner_join(prep.mean, prep.std, by = 'Date') |>
+  dplyr::rename('month' = 'month.x',
+                'variable' = 'variable.x',
+                'mean' = 'value.x',
+                'std' = 'value.y')|>
+  dplyr::select(c('month', 'variable', 'mean', 'std'))|>
+  group_by(month, variable)|>
+  dplyr::summarise(mean = mean(mean),
+                   std = mean(std))|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c('349', '395', '450', '499', '621', 
+                                 '714','803', '977', '1214', '1593'))) |>
+  dplyr::filter(variable == '349' | variable == '395' | variable == '450' |
+                  variable == '621' | variable == '1593')
+
+################################################################################
+trans_annual_mean <- Hump_Mountain|>
+  dplyr::select(c('row','Date', starts_with('t'))) |>
+  group_by(month = lubridate::floor_date(Date, 'year'))|>
+  dplyr::summarise(Date = Date, 
+                   '349' = mean(trans_349, na.rm = TRUE),                   
+                   '395' = mean(trans_395, na.rm = TRUE),                  
+                   '450' = mean(trans_450, na.rm = TRUE),                   
+                   '499' = mean(trans_499, na.rm = TRUE),                   
+                   '621' = mean(trans_621, na.rm = TRUE),                   
+                   '714' = mean(trans_714, na.rm = TRUE),   
+                   '803' = mean(trans_803, na.rm = TRUE), 
+                   '977' = mean(trans_977, na.rm = TRUE),                   
+                   '1214' = mean(trans_1214, na.rm = TRUE),
+                   '1593' = mean(trans_1593, na.rm = TRUE))|>
+  pivot_longer(cols = -c('month', 'Date'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c('349', '395', '450', '499', '621', 
+                                 '714','803', '977', '1214', '1593')))
+
+################################################################################
+# Optical Depth
+################################################################################
+Hump_Mountain_od <- Hump_Mountain_long|>
+  dplyr::mutate_at(c('values'), ~-log(.))
+
+################################################################################
+prep.mean.od <- Hump_Mountain|>
+  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
+                           "trans_499", "trans_621", "trans_714", "trans_803",
+                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>    
+  group_by(month = lubridate::month(Date, label = TRUE))|>
+  dplyr::summarise(Date = Date, 
+                   '349' = mean(trans_349, na.rm = TRUE),                   
+                   '395' = mean(trans_395, na.rm = TRUE),                  
+                   '450' = mean(trans_450, na.rm = TRUE),                   
+                   '499' = mean(trans_499, na.rm = TRUE),                   
+                   '621' = mean(trans_621, na.rm = TRUE),                   
+                   '714' = mean(trans_714, na.rm = TRUE),   
+                   '803' = mean(trans_803, na.rm = TRUE), 
+                   '977' = mean(trans_977, na.rm = TRUE),                   
+                   '1214' = mean(trans_1214, na.rm = TRUE),
+                   '1593' = mean(trans_1593, na.rm = TRUE))|>
+  pivot_longer(cols = -c('month', 'Date'), 
+               names_to = 'variable', values_to = 'value')
+
+prep.std.od <- Hump_Mountain|>
+  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
+                           "trans_499", "trans_621", "trans_714", "trans_803",
+                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>  
+  group_by(month = lubridate::month(Date, label = TRUE))|>
+  dplyr::summarise(Date = Date,
+                   'std_349' = sd(trans_349, na.rm = TRUE),                   
+                   'std_395' = sd(trans_395, na.rm = TRUE),                  
+                   'std_450' = sd(trans_450, na.rm = TRUE),                   
+                   'std_499' = sd(trans_499, na.rm = TRUE),                   
+                   'std_621' = sd(trans_621, na.rm = TRUE),                   
+                   'std_714' = sd(trans_714, na.rm = TRUE),   
+                   'std_803' = sd(trans_803, na.rm = TRUE), 
+                   'std_977' = sd(trans_977, na.rm = TRUE),                   
+                   'std_1214' = sd(trans_1214, na.rm = TRUE),
+                   'std_1593' = sd(trans_1593, na.rm = TRUE))|>
+  dplyr::select(c('Date','month', starts_with('std'))) |>
+  pivot_longer(cols = starts_with(c('std')), 
+               names_to = 'variable', values_to = 'value')
+
+optical_depth <- inner_join(prep.mean.od, prep.std.od, by = 'Date') |>
+  dplyr::rename('month' = 'month.x',
+                'variable' = 'variable.x',
+                'mean' = 'value.x',
+                'std' = 'value.y')|>
+  dplyr::select(c('month', 'variable', 'mean', 'std'))|>
+  group_by(month, variable)|>
+  dplyr::summarise(mean = mean(mean),
+                   std = mean(std))|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c('349', '395', '450', '499', '621', 
+                                 '714','803', '977', '1214', '1593'))) |>
+  dplyr::filter(variable == '349' | variable == '450' |
+                  variable == '621' | variable == '1593')
+
+################################################################################
+od_annual_mean <- Hump_Mountain|>
+  dplyr::select(c('row','Date', starts_with('t'))) |>
+  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
+                           "trans_499", "trans_621", "trans_714", "trans_803",
+                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>
+  group_by(month = lubridate::floor_date(Date, 'year'))|>
+  dplyr::summarise('349' = mean(trans_349, na.rm = TRUE),
+                   '395' = mean(trans_395, na.rm = TRUE),
+                   '450' = mean(trans_450, na.rm = TRUE),
+                   '499' = mean(trans_499, na.rm = TRUE),
+                   '621' = mean(trans_621, na.rm = TRUE),
+                   '714' = mean(trans_714, na.rm = TRUE),
+                   '803' = mean(trans_803, na.rm = TRUE),
+                   '977' = mean(trans_977, na.rm = TRUE),
+                   '1214' = mean(trans_1214, na.rm = TRUE),
+                   '1593' = mean(trans_1593, na.rm = TRUE))|>
+  pivot_longer(cols = -c('month'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c('349', '395', '450', '499', '621', 
+                                 '714','803', '977', '1214', '1593')))
+
+################################################################################
+# Ågström parameter
+################################################################################
+Hump_Mountain.alpha <- Hump_Mountain|>
+  dplyr::mutate(
+    alpha_349 = -(log(Hump_Mountain$trans_349) - log(Hump_Mountain$trans_977)) / log(349),
+    alpha_395 = -(log(Hump_Mountain$trans_395) - log(Hump_Mountain$trans_977)) / log(395),
+    alpha_450 = -(log(Hump_Mountain$trans_450) - log(Hump_Mountain$trans_977)) / log(450),
+    alpha_499 = -(log(Hump_Mountain$trans_499) - log(Hump_Mountain$trans_977)) / log(499),
+    alpha_621 = -(log(Hump_Mountain$trans_621) - log(Hump_Mountain$trans_977)) / log(621),
+    alpha_714 = -(log(Hump_Mountain$trans_714) - log(Hump_Mountain$trans_977)) / log(714),
+    alpha_803 = -(log(Hump_Mountain$trans_803) - log(Hump_Mountain$trans_977)) / log(803),
+    alpha_1214 = -(log(Hump_Mountain$trans_1214) - log(Hump_Mountain$trans_977)) / log(1214),
+    alpha_1593 = -(log(Hump_Mountain$trans_1593) - log(Hump_Mountain$trans_977)) / log(1593)) |>
+  dplyr::select(c('row','Date', starts_with('a')))
+
+################################################################################
+Hump_Mountain.alpha.long <- Hump_Mountain.alpha|>
+  pivot_longer(cols = starts_with('a'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("alpha_349", "alpha_395", "alpha_450", 
+                           "alpha_499", "alpha_621", "alpha_714", "alpha_803",
+                           "alpha_1214", "alpha_1593")))
+
+################################################################################
+alpha_annual_mean <- Hump_Mountain.alpha|>
+  group_by(month = lubridate::floor_date(Date, 'year'))|>
+  dplyr::summarise('349' = mean(alpha_349, na.rm = TRUE),
+                   '395' = mean(alpha_395, na.rm = TRUE),
+                   '450' = mean(alpha_450, na.rm = TRUE),
+                   '499' = mean(alpha_499, na.rm = TRUE),
+                   '621' = mean(alpha_621, na.rm = TRUE),
+                   '714' = mean(alpha_714, na.rm = TRUE),
+                   '803' = mean(alpha_803, na.rm = TRUE),
+                   '1214' = mean(alpha_1214, na.rm = TRUE),
+                   '1593' = mean(alpha_1593, na.rm = TRUE))|>
+  pivot_longer(cols = -c('month'),
+               names_to = 'variable',
+               values_to = 'values')|>
+  dplyr::mutate(variable = factor(variable,
+                levels = c('349', '395', '450', '499', '621', 
+                                 '714','803', '1214', '1593')))
+```
+
+# Graphs
+
+In this section, the actual analysis is performed. For this purpose,
+multiple graphs are created. First for the transmission, then for the
+atmospheric optical depth and finally for the Ångström parameter.
+
+## Transmission
+
+### Overview transmission
+
+```{r overview_transmission, message=FALSE, error=FALSE, warning=FALSE}
+################################################################################
+# Overview (1917 - 1918)
+Hump_Mountain.1917.1918.trans <- Hump_Mountain_long|>
+  dplyr::filter(variable  != 'trans_900') |>  
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.1) +
+  geom_smooth(aes(x = Date, y = values, color = variable), se = FALSE) +
+  labs(x = 'Time [year]', y = 'Transmission [ ]') +
+  scale_color_viridis_d(option = "varidis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008', '1244', '1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+Hump_Mountain.1917.1918.trans
+```
+
+### Boxplot
+
+```{r Transmission_boxplot, message=FALSE, warning=FALSE, error=FALSE}
+Hump_Mountain.boxplot <- Hump_Mountain_long|>
+ggplot()+
+  geom_boxplot(aes(x = variable, y = values),
+  notch = TRUE, outlier.alpha = .1, outlier.colour = 'black') +
+  stat_boxplot(aes(x = variable, y = values),
+  geom='errorbar', linetype = 1, width = 0.5) +
+  geom_jitter(aes(x = variable, y = values), size = .5, width = .1, alpha = .1) +
+  scale_x_discrete(labels = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008', '1244', '1610')) +
+  labs(x = 'Wavelength [nm]', y = 'Transmission [ ]') +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+Hump_Mountain.boxplot
+```
+
+### Monthly aggregated atmospheric transmission
+
+```{r Transmission_mothly_resolution, message=FALSE, warning=FALSE, error=FALSE}
+transmission_overview <- transmission|>
+  ggplot() +
+  geom_point(aes(x = month, y = mean, color = variable)) +
+  geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
+  geom_errorbar(aes(x = month, ymin = mean - std, ymax = mean + std), width = .1) +
+  guides(color = guide_legend(title = "Wavelength [nm]")) +
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3, alpha = 1)), 
+  label = c('355','403' ,'460', '637','1610')) +
+  labs(x = 'Time [months]', y = 'Monthly aggregated atmospheric transmission [ ]') +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+transmission_overview
+```
+
+### Annual mean of the atmospheric transmission
+
+```{r Annual_transmission, message=FALSE, warning=FALSE, error=FALSE}
+annual_transmission <- trans_annual_mean|>
+  ggplot()+
+  geom_point(aes(x = month, y = values, color = variable))+
+  geom_line(aes(x = month, y = values, color = variable), size = 0.1)+  
+  labs(x = 'Time [1920 - 1930]', y = 'Annual mean of the atmospheric transmission [ ]') +
+  scale_y_continuous(limits = c(.3, 1))+
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008','1244', '1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+annual_transmission
+```
+
+## Optical Depth
+
+### Overview optical depth
+
+```{r Overview_od, warning=FALSE, error=FALSE, message=FALSE}
+################################################################################
+# Overview (1917 - 1918)
+Hump_Mountain.1917.1918.od <- Hump_Mountain_long|>
+  dplyr::mutate_at(c('values'), ~-log(.))|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.1) +
+  geom_smooth(aes(x = Date, y = values, color = variable), se = FALSE) +
+  labs(x = 'Time [year]', y = 'Atmospheric optical depth [ ]') +
+  scale_color_viridis_d(option = "varidis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008', '1244', '1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  
+
+Hump_Mountain.1917.1918.od
+```
+
+### Boxplot
+
+```{r Boxplot_od, message=FALSE, error=FALSE, warning=FALSE}
+Hump_Mountain.boxplot.od <- Hump_Mountain_long|>
+    dplyr::mutate_at(c('values'), ~-log(.))|>
+ggplot()+
+  geom_boxplot(aes(x = variable, y = values),
+  notch = TRUE, outlier.alpha = .1, outlier.colour = 'black') +
+  stat_boxplot(aes(x = variable, y = values),
+  geom='errorbar', linetype = 1, width = 0.5) +
+  geom_jitter(aes(x = variable, y = values), size = .5, width = .1, alpha = .1) +
+  scale_x_discrete(labels = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008', '1244', '1610')) +
+  labs(x = 'Wavelength [nm]', y = 'Atmospheric optical depth [ ]') +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+Hump_Mountain.boxplot.od
+```
+
+### Monthly aggregated optical depth
+
+```{r monthly_aggregated_od, message=FALSE, error=FALSE, warning=FALSE}
+optical_depth_overview <- optical_depth|>
+  ggplot() +
+  geom_point(aes(x = month, y = mean, color = variable)) +
+  geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
+  geom_errorbar(aes(x = month, ymin = mean - std, ymax = mean + std), width = .1) +
+  guides(color = guide_legend(title = "Wavelength [nm]")) +
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3, alpha = 1)), 
+                       label = c('355', '460', '637','1610')) +
+  labs(x = 'Time [months]', y = 'Monthly aggregated atmospheric optical depth [ ]') +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+optical_depth_overview
+```
+
+### Annual mean of the optical depth
+
+```{r Annual_aggregated_od, message=FALSE, error=FALSE, warning=FALSE}
+annual_od <- od_annual_mean|>
+  ggplot()+
+  geom_point(aes(x = month, y = values, color = variable))+
+  geom_line(aes(x = month, y = values, color = variable), size = 0.1)+  
+  labs(x = 'Time [1917 - 1918]', y = 'Annual mean of the atmospheric optical depth [ ]') +
+  scale_y_continuous(limits = c(0, 1))+
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1008','1244', '1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+annual_od
+```
+
+## Angström Parameter
+
+### Overview (1905 - 1920)
+
+```{r Overview_alpha, message=FALSE, error=FALSE, warning=FALSE}
+################################################################################
+# Overview (1917 - 1918)
+Hump_Mountain.alpha.1917.1918 <- Hump_Mountain.alpha.long|>
+  ggplot()+
+  geom_point(aes(x = Date, y = values, color = variable), alpha = 0.1) +
+  geom_smooth(aes(x = Date, y = values, color = variable), se = FALSE) +
+  labs(x = 'Date [year]', y = 'Ångström paramter [ ]') +
+  scale_color_viridis_d(option = "varidis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1244', '1610')) +
+  scale_y_continuous(limits = c(-.01, .1)) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+Hump_Mountain.alpha.1917.1918
+```
+
+### Boxplot
+
+```{r Boxplot_alpha, message=FALSE, error=FALSE, warning=FALSE}
+Hump_Mountain.boxplot.alpha <- Hump_Mountain.alpha.long|>
+    dplyr::filter((Date > as_date('1903-01-01'))) |>
+ggplot()+
+  geom_boxplot(aes(x = variable, y = values),
+  notch = TRUE, outlier.alpha = .1, outlier.colour = 'black') +
+  stat_boxplot(aes(x = variable, y = values),
+  geom='errorbar', linetype = 1, width = 0.5) +
+  geom_jitter(aes(x = variable, y = values), size = .5, width = .1, alpha = .1) +
+  scale_x_discrete(labels = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1244', '1610')) +
+  labs(x = 'Wavelength [nm]', y = 'Ångström parameter [ ]') +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+Hump_Mountain.boxplot.alpha
+```
+
+### Monthly aggregated Ångström parameter
+
+```{r Monhtly_aggregated_alpha, message=FALSE, error=FALSE, warning=FALSE}
+angstrom_overview <- Hump_Mountain.alpha.long|>
+  group_by(variable) |>
+  dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>  
+  ggplot(aes(x = Date, y = values, color = variable)) +
+  geom_point(aes(y = values, color = variable), alpha = 0.2) +
+  geom_line(aes(y = rolling_avg, color = variable)) +
+  labs(x = 'Time [months]', 
+       y = 'Ångström parameter [ ]') +
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), labels = c('355', '403', '460', '511', '637', 
+                                 '702','830', '1244', '1610')) +  
+  scale_y_continuous(limits = c(-.01, .2))+  
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+angstrom_overview
+```
+
+### Annual mean of the Ångström parameter
+
+```{r Annual_aggregated_alpha, message=FALSE, error=FALSE, warning=FALSE}
+annual_alpha <- alpha_annual_mean|>
+  ggplot()+
+  geom_point(aes(x = month, y = values, color = variable))+
+  geom_line(aes(x = month, y = values, color = variable), size = 0.1) +  
+  labs(x = 'Time [1917 - 1918]', y = 'Annual mean of the Ångström parameter [ ]') +
+  scale_y_continuous(limits = c(-.05, .2)) +
+  scale_color_viridis_d(option = "viridis",
+  guide = guide_legend(override.aes = list(size = 3, alpha = 1), title = "Wavelength [nm]"),
+  label = c('355', '403', '460', '511', '637', 
+                                 '702','830','1244', '1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+annual_alpha
+```
+
+# PDFs
+
+## Transmission
+
+```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
+pdf('../analysis/Hump_Mountain//Transmission/Hump_Mountain.1917.1918.trans.pdf',
+    width = 8, height = 5)
+Hump_Mountain.1917.1918.trans
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Transmission/Hump_Mountain.boxplot.pdf',
+    width = 8, height = 5)
+Hump_Mountain.boxplot
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Transmission/transmission_overview.pdf',
+    width = 8, height = 5)
+transmission_overview
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Transmission/annual_transmission.pdf',
+    width = 8, height = 5)
+annual_transmission
+dev.off()
+```
+
+## Optical depth
+
+```{r PDF_od, message=FALSE, error=FALSE, warning=FALSE}
+pdf('../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.1917.1918.od.pdf',
+    width = 8, height = 5)
+Hump_Mountain.1917.1918.od
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Optical_depth/Hump_Mountain.boxplot.od.pdf',
+    width = 8, height = 5)
+Hump_Mountain.boxplot.od
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Optical_depth/optical_depth_overview.pdf',
+    width = 8, height = 5)
+optical_depth_overview
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Optical_depth/annual_od.pdf',
+    width = 8, height = 5)
+annual_od
+dev.off()
+```
+
+## Ångström parameter
+
+```{r PDF_alpha, message=FALSE, error=FALSE, warning=FALSE}
+pdf('../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.alpha.1917.1918.pdf',
+    width = 8, height = 5)
+Hump_Mountain.alpha.1917.1918
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Angstrom_parameter/Hump_Mountain.boxplot.alpha.pdf',
+    width = 8, height = 5)
+Hump_Mountain.boxplot.alpha
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Angstrom_parameter/angstrom_overview.pdf',
+    width = 8, height = 5)
+angstrom_overview
+dev.off()
+
+pdf('../analysis/Hump_Mountain//Angstrom_parameter/annual_alpha.pdf',
+    width = 8, height = 5)
+annual_alpha
+dev.off()
+```
