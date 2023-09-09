@@ -47,6 +47,8 @@ Calama.1918.1920 <- Calama.1918.1920|>
   dplyr::select(-c('year', 'month', 'day'))
 
 Calama.1918.1920 <- replace(Calama.1918.1920, Calama.1918.1920 == -999, NA)
+
+write_csv(Calama.1918.1920, '../../data/trans_Timeline/Calama.ok.csv')
 ```
 
 # Data-quality
@@ -92,13 +94,12 @@ quality-control calls.
     unlikely and we replace the value with NA.
 
 ```{r create_tables, message=FALSE, error=FALSE, warning=FALSE}
-################################################################################
-# Transmission (long format)
-################################################################################
 # We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
 Calama <- Calama|>
   dplyr::mutate(across(3:22, ~ifelse(.x > 2, NA, .x)))
 
+################################################################################
+# Transmission (long format)
 ################################################################################
 Calama_long <- Calama|>
   dplyr::select(c('Date', starts_with('t')))|>
@@ -113,206 +114,90 @@ Calama_long <- Calama|>
                            "trans_977", "trans_1214", "trans_1593")))|>
   dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
-
 ################################################################################
-prep.mean <- Calama|>
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date, 
-                   '349' = mean(trans_349, na.rm = TRUE),                   
-                   '395' = mean(trans_395, na.rm = TRUE),                  
-                   '450' = mean(trans_450, na.rm = TRUE),                   
-                   '499' = mean(trans_499, na.rm = TRUE),                   
-                   '621' = mean(trans_621, na.rm = TRUE),                   
-                   '714' = mean(trans_714, na.rm = TRUE),   
-                   '803' = mean(trans_803, na.rm = TRUE), 
-                   '977' = mean(trans_977, na.rm = TRUE),                   
-                   '1214' = mean(trans_1214, na.rm = TRUE),
-                   '1593' = mean(trans_1593, na.rm = TRUE))|>
-  pivot_longer(cols = -c('month', 'Date'), 
-               names_to = 'variable', values_to = 'value')
-
-prep.std <- Calama|>
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date,
-                   'std_349' = sd(trans_349, na.rm = TRUE),                   
-                   'std_395' = sd(trans_395, na.rm = TRUE),                  
-                   'std_450' = sd(trans_450, na.rm = TRUE),                   
-                   'std_499' = sd(trans_499, na.rm = TRUE),                   
-                   'std_621' = sd(trans_621, na.rm = TRUE),                   
-                   'std_714' = sd(trans_714, na.rm = TRUE),   
-                   'std_803' = sd(trans_803, na.rm = TRUE), 
-                   'std_977' = sd(trans_977, na.rm = TRUE),                   
-                   'std_1214' = sd(trans_1214, na.rm = TRUE),
-                   'std_1593' = sd(trans_1593, na.rm = TRUE)) |>
-  pivot_longer(cols = -c('month', 'Date'), 
-               names_to = 'variable', values_to = 'value')
-
-transmission <- inner_join(prep.mean, prep.std, by = 'Date') |>
-  dplyr::rename('month' = 'month.x',
-                'variable' = 'variable.x',
-                'mean' = 'value.x',
-                'std' = 'value.y')|>
-  dplyr::select(c('month', 'variable', 'mean', 'std'))|>
-  group_by(month, variable)|>
-  dplyr::summarise(mean = mean(mean),
-                   std = mean(std))|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c('349', '395', '450', '499', '621', 
-                                 '714','803', '977', '1214', '1593'))) |>
-  dplyr::filter(variable == '349' | variable == '395' | variable == '450' |
-                  variable == '621' | variable == '1593')
-
+transmission <- Calama_long|>
+    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    group_by(month,variable)|>  
+    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+                                  median(., na.rm = TRUE),
+                                  mean(., na.rm = TRUE),
+                                  sd(., na.rm = TRUE),
+                                  quantile(., probs = .25, na.rm = TRUE),
+                                  quantile(., probs = .75, na.rm = TRUE),
+                                  IQR(.,na.rm = TRUE)))|>
+  dplyr::filter(variable == 'trans_349' | variable == 'trans_395' | variable == 'trans_450' |
+                  variable == 'trans_621' | variable == 'trans_714' | variable == 'trans_1593')
 ################################################################################
-trans_annual_mean <- Calama|>
-  dplyr::select(c('row','Date', starts_with('t'))) |>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise(Date = Date, 
-                   '349' = mean(trans_349, na.rm = TRUE),                   
-                   '395' = mean(trans_395, na.rm = TRUE),                  
-                   '450' = mean(trans_450, na.rm = TRUE),                   
-                   '499' = mean(trans_499, na.rm = TRUE),                   
-                   '621' = mean(trans_621, na.rm = TRUE),                   
-                   '714' = mean(trans_714, na.rm = TRUE),   
-                   '803' = mean(trans_803, na.rm = TRUE), 
-                   '977' = mean(trans_977, na.rm = TRUE),                   
-                   '1214' = mean(trans_1214, na.rm = TRUE),
-                   '1593' = mean(trans_1593, na.rm = TRUE))|>
-  pivot_longer(cols = -c('month', 'Date'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c('349', '395', '450', '499', '621', 
-                                 '714','803', '977', '1214', '1593')))
-
+trans_annual_mean <- Calama_long|>
+   dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+   dplyr::mutate(variable = factor(variable,
+                levels = c("trans_349", "trans_395", "trans_450", 
+                           "trans_499", "trans_621", "trans_714", "trans_803",
+                           "trans_977", "trans_1214", "trans_1593")))|> 
+    group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
 ################################################################################
 # Optical Depth
 ################################################################################
 Calama_od <- Calama_long|>
   dplyr::mutate_at(c('values'), ~-log(.))
-
 ################################################################################
-prep.mean.od <- Calama|>
-  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
-                           "trans_499", "trans_621", "trans_714", "trans_803",
-                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>    
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date, 
-                   '349' = mean(trans_349, na.rm = TRUE),                   
-                   '395' = mean(trans_395, na.rm = TRUE),                  
-                   '450' = mean(trans_450, na.rm = TRUE),                   
-                   '499' = mean(trans_499, na.rm = TRUE),                   
-                   '621' = mean(trans_621, na.rm = TRUE),                   
-                   '714' = mean(trans_714, na.rm = TRUE),   
-                   '803' = mean(trans_803, na.rm = TRUE), 
-                   '977' = mean(trans_977, na.rm = TRUE),                   
-                   '1214' = mean(trans_1214, na.rm = TRUE),
-                   '1593' = mean(trans_1593, na.rm = TRUE))|>
-  pivot_longer(cols = -c('month', 'Date'), 
-               names_to = 'variable', values_to = 'value')
-
-prep.std.od <- Calama|>
-  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
-                           "trans_499", "trans_621", "trans_714", "trans_803",
-                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>  
-  group_by(month = lubridate::month(Date, label = TRUE))|>
-  dplyr::summarise(Date = Date,
-                   'std_349' = sd(trans_349, na.rm = TRUE),                   
-                   'std_395' = sd(trans_395, na.rm = TRUE),                  
-                   'std_450' = sd(trans_450, na.rm = TRUE),                   
-                   'std_499' = sd(trans_499, na.rm = TRUE),                   
-                   'std_621' = sd(trans_621, na.rm = TRUE),                   
-                   'std_714' = sd(trans_714, na.rm = TRUE),   
-                   'std_803' = sd(trans_803, na.rm = TRUE), 
-                   'std_977' = sd(trans_977, na.rm = TRUE),                   
-                   'std_1214' = sd(trans_1214, na.rm = TRUE),
-                   'std_1593' = sd(trans_1593, na.rm = TRUE))|>
-  dplyr::select(c('Date','month', starts_with('std'))) |>
-  pivot_longer(cols = starts_with(c('std')), 
-               names_to = 'variable', values_to = 'value')
-
-optical_depth <- inner_join(prep.mean.od, prep.std.od, by = 'Date') |>
-  dplyr::rename('month' = 'month.x',
-                'variable' = 'variable.x',
-                'mean' = 'value.x',
-                'std' = 'value.y')|>
-  dplyr::select(c('month', 'variable', 'mean', 'std'))|>
-  group_by(month, variable)|>
-  dplyr::summarise(mean = mean(mean),
-                   std = mean(std))|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c('349', '395', '450', '499', '621', 
-                                 '714','803', '977', '1214', '1593'))) |>
-  dplyr::filter(variable == '349' | variable == '450' |
-                  variable == '621' | variable == '1593')
-
+optical_depth <- Calama_od|>
+    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    group_by(month,variable)|>  
+    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+                                  median(., na.rm = TRUE),
+                                  mean(., na.rm = TRUE),
+                                  sd(., na.rm = TRUE),
+                                  quantile(., probs = .25, na.rm = TRUE),
+                                  quantile(., probs = .75, na.rm = TRUE),
+                                  IQR(.,na.rm = TRUE)))|>
+  dplyr::filter(variable == 'trans_349' | variable == 'trans_395' | variable == 'trans_450' |
+                  variable == 'trans_621' | variable == 'trans_714' | variable == 'trans_1593')
 ################################################################################
-od_annual_mean <- Calama|>
-  dplyr::select(c('row','Date', starts_with('t'))) |>
-  dplyr::mutate_at(c("trans_349", "trans_395", "trans_450", 
+od_annual_mean <- Calama_od|>
+   dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+   dplyr::mutate(variable = factor(variable,
+                levels = c("trans_349", "trans_395", "trans_450", 
                            "trans_499", "trans_621", "trans_714", "trans_803",
-                           "trans_977", "trans_1214", "trans_1593"), ~-log(.)) |>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise('349' = mean(trans_349, na.rm = TRUE),
-                   '395' = mean(trans_395, na.rm = TRUE),
-                   '450' = mean(trans_450, na.rm = TRUE),
-                   '499' = mean(trans_499, na.rm = TRUE),
-                   '621' = mean(trans_621, na.rm = TRUE),
-                   '714' = mean(trans_714, na.rm = TRUE),
-                   '803' = mean(trans_803, na.rm = TRUE),
-                   '977' = mean(trans_977, na.rm = TRUE),
-                   '1214' = mean(trans_1214, na.rm = TRUE),
-                   '1593' = mean(trans_1593, na.rm = TRUE))|>
-  pivot_longer(cols = -c('month'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c('349', '395', '450', '499', '621', 
-                                 '714','803', '977', '1214', '1593')))
+                           "trans_977", "trans_1214", "trans_1593")))|> 
+    group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
 
+write_csv(od_annual_mean, '../../data/od_Timeline/calama.od.csv')
 ################################################################################
 # Ågström parameter
 ################################################################################
-Calama.alpha <- Calama|>
-  dplyr::mutate(
-    alpha_349 = -(log(Calama$trans_349) - log(Calama$trans_977)) / log(349),
-    alpha_395 = -(log(Calama$trans_395) - log(Calama$trans_977)) / log(395),
+Calama.alpha.long <- Calama|>
+  dplyr::mutate(alpha_350 = -(log(Calama$trans_349) - log(Calama$trans_977)) / log(349),
+    alpha_400 = -(log(Calama$trans_395) - log(Calama$trans_977)) / log(395),
     alpha_450 = -(log(Calama$trans_450) - log(Calama$trans_977)) / log(450),
-    alpha_499 = -(log(Calama$trans_499) - log(Calama$trans_977)) / log(499),
-    alpha_621 = -(log(Calama$trans_621) - log(Calama$trans_977)) / log(621),
-    alpha_714 = -(log(Calama$trans_714) - log(Calama$trans_977)) / log(714),
-    alpha_803 = -(log(Calama$trans_803) - log(Calama$trans_977)) / log(803),
-    alpha_1214 = -(log(Calama$trans_1214) - log(Calama$trans_977)) / log(1214),
-    alpha_1593 = -(log(Calama$trans_1593) - log(Calama$trans_977)) / log(1593)) |>
-  dplyr::select(c('row','Date', starts_with('a')))
-
-################################################################################
-Calama.alpha.long <- Calama.alpha|>
+    alpha_500 = -(log(Calama$trans_499) - log(Calama$trans_977)) / log(499),
+    alpha_600 = -(log(Calama$trans_621) - log(Calama$trans_977)) / log(621),
+    alpha_700 = -(log(Calama$trans_714) - log(Calama$trans_977)) / log(714),
+    alpha_800 = -(log(Calama$trans_803) - log(Calama$trans_977)) / log(803),
+    alpha_900 = NA,
+    alpha_1200 = -(log(Calama$trans_1214) - log(Calama$trans_977)) / log(1214),
+    alpha_1600 = -(log(Calama$trans_1593) - log(Calama$trans_977)) / log(1593)) |>
+  dplyr::select(c('row','Date', starts_with('a')))|>
   pivot_longer(cols = starts_with('a'),
                names_to = 'variable',
                values_to = 'values')|>
   dplyr::mutate(variable = factor(variable,
-                levels = c("alpha_349", "alpha_395", "alpha_450", 
-                           "alpha_499", "alpha_621", "alpha_714", "alpha_803",
-                           "alpha_1214", "alpha_1593")))
-
+                levels = c("alpha_350", "alpha_400", "alpha_450", "alpha_500", 
+                           "alpha_600", "alpha_700", "alpha_800", "alpha_900",
+                           "alpha_1200", "alpha_1600")))  
 ################################################################################
-alpha_annual_mean <- Calama.alpha|>
-  group_by(month = lubridate::floor_date(Date, 'year'))|>
-  dplyr::summarise('349' = mean(alpha_349, na.rm = TRUE),
-                   '395' = mean(alpha_395, na.rm = TRUE),
-                   '450' = mean(alpha_450, na.rm = TRUE),
-                   '499' = mean(alpha_499, na.rm = TRUE),
-                   '621' = mean(alpha_621, na.rm = TRUE),
-                   '714' = mean(alpha_714, na.rm = TRUE),
-                   '803' = mean(alpha_803, na.rm = TRUE),
-                   '1214' = mean(alpha_1214, na.rm = TRUE),
-                   '1593' = mean(alpha_1593, na.rm = TRUE))|>
-  pivot_longer(cols = -c('month'),
-               names_to = 'variable',
-               values_to = 'values')|>
-  dplyr::mutate(variable = factor(variable,
-                levels = c('349', '395', '450', '499', '621', 
-                                 '714','803', '1214', '1593')))
+alpha_annual_mean <- Calama.alpha.long|>
+   dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+   dplyr::mutate(variable = factor(variable,
+                levels = c("alpha_350", "alpha_400", "alpha_450", "alpha_500", 
+                           "alpha_600", "alpha_700", "alpha_800", "alpha_900",
+                           "alpha_1200", "alpha_1600")))|> 
+    group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+
+write_csv(alpha_annual_mean, '../../data/alpha_timeline/Calama.alpha.csv')
 ```
 
 # Graphs

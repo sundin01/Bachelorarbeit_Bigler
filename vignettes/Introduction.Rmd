@@ -120,7 +120,7 @@ locations.
 
 ```{r mapping_preparation, message=FALSE, error=FALSE, warning=FALSE}
 df.locations <- tibble("Location" =
-c("WDC06A", "NEEM-S1" ,"Katmai", "Santa Maria", "Katla", "Ksudach", "Raikoke", "Montezuma",
+c("WDC06A", "NEEM-S1" ,"Novarupta", "Santa Maria", "Katla", "Ksudach", "Raikoke", "Montezuma",
 "Calama", "Table Mountain", "Harqua Hala",
 "Mt. Brukkaros", "Mt. Wilson",
 "Washington","Hump Mountain"),
@@ -180,6 +180,23 @@ pdf('../analysis/General/map.pdf',
     width = 8, height = 5)
 overview.plot
 dev.off()
+```
+
+# Theoretical Values
+
+```{r}
+#function for theoretical calculation
+source('../R/General/theoretical_transmission.R')
+
+# Create a sequenze with wavelenth between 0.1nm and 1.6nm
+wavelenghts <- seq(from = 0.1, to = 1.6, by = 0.01)
+
+# Create a sequenze with wavelengths and zenith angle
+values <- transmittance(wavelenghts)
+
+# Put all values in a tibble
+theoretical.values <- tibble("lambda" = wavelenghts,
+                             'normal irradiation' = values)
 ```
 
 # Analyses of the various locations

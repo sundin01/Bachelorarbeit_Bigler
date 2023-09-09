@@ -1,0 +1,720 @@
+---
+title: "Bachelorarbeit: Timelines"
+author: "Patrick Bigler"
+date: "2023-07-07"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+  '': default
+editor_options:
+  markdown:
+    wrap: 75
+---
+
+# Introduction
+
+## Read packages
+
+We read our R-script with all the packages we need.
+
+```{r Package, message=FALSE, error=FALSE, warning=FALSE}
+source("../../R/General/packages.R")
+
+conflicts_prefer(ggplot2::annotate)
+conflicts_prefer(dplyr::mutate)
+conflicts_prefer(lubridate::stamp)
+conflicts_prefer(recipes::fixed)
+conflicts_prefer(yardstick::rmse)
+```
+
+# Northern Hemisphere
+
+## Read the data
+
+```{r}
+Washington.annual <- read_csv('../../data/trans_Timeline/Washington.ok.csv')
+
+Mt.Wilson.annual <- read_csv('../../data/trans_Timeline/Mt.Wilson.ok.csv')
+
+Hump_Mountain.annual <- read_csv('../../data/trans_Timeline/Hump_Mountain.ok.csv')
+
+Haraqua_Hala.annual <- read_csv('../../data/trans_Timeline/Haraqua_Hala.ok.csv')
+
+Table_Mountain.annual <- read_csv('../../data/trans_Timeline/Table_Mountain.ok.csv')
+```
+
+## Transform all data set for Transmisison
+
+```{r}
+selections <- c('Date', 'lambda_1', 'trans_1', 'lambda_2', 'trans_2', 'lambda_3',
+                'trans_3','lambda_4', 'trans_4', 'lambda_5', 'trans_5', 'lambda_6', 
+                'trans_6', 'lambda_7', 'trans_7','lambda_8', 'trans_8', 'lambda_9', 
+                'trans_9', 'lambda_10', 'trans_10', 'lambda_11', 'trans_11')
+            
+Washington.annual <- Washington.annual|>
+dplyr::mutate('lambda_1' = 0.35, 'trans_1' = NA)|>  
+dplyr::rename(c('lambda_2' = 'lambda1...m.', 'lambda_3' = 'lambda2...m.',
+                'lambda_4' = 'lambda3...m.', 'lambda_5' = 'lambda4...m.',
+                'lambda_6' = 'lambda5...m.','lambda_7' = 'lambda6...m.',
+                'lambda_8' = 'lambda7...m.','lambda_9' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_2' = 'transmission1....100.', 'trans_3' = 'transmission2....100.',
+                'trans_4' = 'transmission3....100.','trans_5' = 'transmission4....100.',
+                'trans_6' = 'transmission5....100.','trans_7' = 'transmission6....100.',
+                'trans_8' = 'transmission7....100.','trans_9' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+
+
+Mt.Wilson.annual <- Mt.Wilson.annual|>
+dplyr::rename(c('lambda_1' = 'lambda_350', 'lambda_2' = 'lambda_400', 
+                'lambda_3' = 'lambda_450','lambda_4' = 'lambda_500', 
+                'lambda_5' = 'lambda_600','lambda_6' = 'lambda_700',
+                'lambda_7' = 'lambda_800','lambda_8' = 'lambda_900',
+                'lambda_9' = 'lambda_1000','lambda_10' = 'lambda_1200',
+                'lambda_11' = 'lambda_1600','trans_1' = 'trans_350', 
+                'trans_2' = 'trans_400', 'trans_3' = 'trans_450',
+                'trans_4' = 'trans_500','trans_5' = 'trans_600',
+                'trans_6' = 'trans_700','trans_7' = 'trans_800',
+                'trans_8' = 'trans_900','trans_9' = 'trans_1000',
+                'trans_10' = 'trans_1200','trans_11' = 'trans_1600'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>  
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+
+
+Hump_Mountain.annual <- Hump_Mountain.annual|>
+  dplyr::mutate('lambda_9' = 0.9, 'trans_9' = NA)|> 
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_8' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
+
+Haraqua_Hala.annual <- Haraqua_Hala.annual|>
+  dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|> 
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_9' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
+
+Table_Mountain.annual <- Table_Mountain.annual|>
+  dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|> 
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_9' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) 
+```
+
+## Transform all data sets for Optical Depth
+
+```{r}
+Washington.annual.od <- Washington.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Mt.Wilson.annual.od <- Mt.Wilson.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Hump_Mountain.annual.od <- Hump_Mountain.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Haraqua_Hala.annual.od <- Haraqua_Hala.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Table_Mountain.annual.od <- Table_Mountain.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+```
+
+## Transform all data sets for Ångström Parameter
+
+```{r}
+Washington.annual.alpha <- read_csv('../../data/alpha_timeline/Washington.alpha.csv')
+
+Mt.Wilson.annual.alpha <- read_csv('../../data/alpha_timeline/Mt.Wilson.alpha.csv')
+
+Hump_Mountain.annual.alpha <- read_csv('../../data/alpha_timeline/Hump_Mountain.alpha.csv')
+
+Haraqua_Hala.annual.alpha <- read_csv('../../data/alpha_timeline/Haraqua_Hala.alpha.csv')
+
+Table_Mountain.annual.alpha <- read_csv('../../data/alpha_timeline/Table_Mountain.alpha.csv')
+```
+
+## Graphs of the Northern Hemisphere
+
+### Timeline with Transmission
+
+```{r}
+conflicts_prefer(data.table::month)
+
+northern.timeline.trans <- ggplot()+
+  geom_point(data = Washington.annual, aes(x = month, y = values, color = variable))+
+  geom_point(data = Mt.Wilson.annual, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Haraqua_Hala.annual, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Table_Mountain.annual, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Washington.annual, aes(x = month, y = values, color = variable))+
+  geom_line(data = Mt.Wilson.annual, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Haraqua_Hala.annual, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Table_Mountain.annual, aes(x = month, y = values, color = variable)) +  
+  geom_rect(aes(xmin = as.Date("1902-10-19", format = '%Y-%m-%d'), 
+                xmax = as.Date("1904-04-20", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1908-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1909-08-09", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+            color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +   
+  geom_rect(aes(xmin = as.Date("1912-06-12", format = '%Y-%m-%d'), 
+                xmax = as.Date("1914-06-04", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
+  y = .2, label= "Santa Maria [WDC06A]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
+  y = .2, label= "Ksudach [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
+  y = .2, label= "Novarupta [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
+  y = .2, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
+  y = .2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
+  y = .2, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '990 -1010', '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+### Timeline with Optical Depth
+
+```{r}
+conflicts_prefer(data.table::month)
+
+northern.timeline.od <- ggplot()+
+  geom_point(data = Washington.annual.od, aes(x = month, y = values, color = variable))+
+  geom_point(data = Mt.Wilson.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Haraqua_Hala.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Table_Mountain.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Washington.annual.od, aes(x = month, y = values, color = variable))+
+  geom_line(data = Mt.Wilson.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Haraqua_Hala.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Table_Mountain.annual.od, aes(x = month, y = values, color = variable)) +  
+  geom_rect(aes(xmin = as.Date("1902-10-19", format = '%Y-%m-%d'), 
+                xmax = as.Date("1904-04-20", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1908-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1909-08-09", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+            color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +   
+  geom_rect(aes(xmin = as.Date("1912-06-12", format = '%Y-%m-%d'), 
+                xmax = as.Date("1914-06-04", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
+  y = 1.2, label= "Santa Maria [WDC06A]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
+  y = 1.2, label= "Ksudach [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
+  y = 1.2, label= "Novarupta [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
+  y = 1.2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
+  y = 1.2, label= "Novarupta [1912-06-06]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
+  y = 1.2, label= "Ksudach [1907-03-28]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric optical depth [ ]') +  
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '990 -1010', '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+### Timeline with Ångström Parameter
+
+```{r}
+conflicts_prefer(data.table::month)
+
+northern.timeline.alpha <- ggplot()+
+  geom_point(data = Washington.annual.alpha, aes(x = month, y = values, color = variable))+
+  geom_point(data = Mt.Wilson.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Haraqua_Hala.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Table_Mountain.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Washington.annual.alpha, aes(x = month, y = values, color = variable))+
+  geom_line(data = Mt.Wilson.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Haraqua_Hala.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Table_Mountain.annual.alpha, aes(x = month, y = values, color = variable)) + 
+  geom_rect(aes(xmin = as.Date("1902-10-19", format = '%Y-%m-%d'), 
+                xmax = as.Date("1904-04-20", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1908-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1909-08-09", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+            color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +   
+  geom_rect(aes(xmin = as.Date("1912-06-12", format = '%Y-%m-%d'), 
+                xmax = as.Date("1914-06-04", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
+  y = .2, label= "Santa Maria [WDC06A]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
+  y = .2, label= "Ksudach [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
+  y = .2, label= "Novarupta [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
+  geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
+  y = .2, label= "Santa Maria [1902-10-24]", hjust = 1,vjust = -0.2, angle =90, alpha =0.5) + 
+  annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
+  y = .2, label= "Novarupta [1912-06-06]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
+  y = .2, label= "Ksudach [1907-03-28]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric optical depth [ ]') +  
+  scale_y_continuous(limits = c(-0.05,0.2)) +
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+# Southern Hemisphere
+
+## Read the data
+
+```{r}
+Calama.annual <- read_csv('../../data/trans_Timeline/Calama.ok.csv')
+
+Montezuma.annual <- read_csv('../../data/trans_Timeline/Montezuma.ok.csv')
+
+Mt.Brukkaros.annual <- read_csv('../../data/trans_Timeline/Mt.Brukkaros.ok.csv')
+```
+
+## Transform all data set for Transmission
+
+```{r}
+selections <- c('Date', 'lambda_1', 'trans_1', 'lambda_2', 'trans_2', 'lambda_3',
+                'trans_3','lambda_4', 'trans_4', 'lambda_5', 'trans_5', 'lambda_6', 
+                'trans_6', 'lambda_7', 'trans_7','lambda_8', 'trans_8', 'lambda_9', 
+                'trans_9', 'lambda_10', 'trans_10', 'lambda_11', 'trans_11')
+            
+Calama.annual <- Calama.annual|>
+dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|>  
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_9' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+
+Montezuma.annual <- Montezuma.annual|>
+dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|>  
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_9' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+
+Mt.Brukkaros.annual <- Mt.Brukkaros.annual|>
+dplyr::mutate('lambda_9' = 1, 'trans_9' = NA)|>  
+dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
+                'lambda_3' = 'lambda3...m.', 'lambda_4' = 'lambda4...m.',
+                'lambda_5' = 'lambda5...m.','lambda_6' = 'lambda6...m.',
+                'lambda_7' = 'lambda7...m.','lambda_8' = 'lambda8...m.',
+                'lambda_10' = 'lambda9...m.','lambda_11' = 'lambda10...m.',
+                'trans_1' = 'transmission1....100.', 'trans_2' = 'transmission2....100.',
+                'trans_3' = 'transmission3....100.','trans_4' = 'transmission4....100.',
+                'trans_5' = 'transmission5....100.','trans_6' = 'transmission6....100.',
+                'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
+                'trans_10' = 'transmission9....100.',
+                'trans_11' = 'transmission10....100.'))|>
+  dplyr::select(selections) |>
+  pivot_longer(cols = starts_with('t'),
+               names_to = 'variable',
+               values_to = 'values') |>
+  dplyr::mutate(variable = factor(variable,
+                levels = c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")))|> 
+  dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
+  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+```
+
+## Transform all data sets for Optical Depth
+
+```{r}
+Calama.annual.od <- Calama.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Montezuma.annual.od <- Montezuma.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+
+Mt.Brukkaros.annual.od <- Mt.Brukkaros.annual|>
+    dplyr::mutate_at(c('values'), ~-log(.))
+```
+
+## Transform all data sets for Ångström Parameter
+
+```{r}
+Calama.annual.alpha <- read_csv('../../data/alpha_timeline/Calama.alpha.csv')
+
+Montezuma.annual.alpha <- read_csv('../../data/alpha_timeline/Montezuma.alpha.csv')
+
+Mt.Brukkaros.annual.alpha <- read_csv('../../data/alpha_timeline/Mt.Brukkaros.alpha.csv')
+```
+
+## Graphs of the Southern Hemisphere
+
+### Timeline with Transmission
+
+```{r}
+conflicts_prefer(data.table::month)
+
+southern.timeline.trans <- ggplot()+
+  geom_point(data = Calama.annual, aes(x = month, y = values, color = variable))+
+  geom_point(data = Montezuma.annual, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Mt.Brukkaros.annual, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Calama.annual, aes(x = month, y = values, color = variable))+
+  geom_line(data = Montezuma.annual, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Mt.Brukkaros.annual, aes(x = month, y = values, color = variable)) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '990 -1010', '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+### Timeline with Optical Depth
+
+```{r}
+conflicts_prefer(data.table::month)
+
+southern.timeline.od <- ggplot()+
+  geom_point(data = Calama.annual.od, aes(x = month, y = values, color = variable))+
+  geom_point(data = Montezuma.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Mt.Brukkaros.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Calama.annual.od, aes(x = month, y = values, color = variable))+
+  geom_line(data = Montezuma.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Mt.Brukkaros.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '990 -1010', '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+### Timeline with Ångström Parameter
+
+```{r}
+conflicts_prefer(data.table::month)
+
+southern.timeline.alpha <- ggplot()+
+  geom_point(data = Calama.annual.alpha, aes(x = month, y = values, color = variable))+
+  geom_point(data = Montezuma.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Mt.Brukkaros.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Calama.annual.alpha, aes(x = month, y = values, color = variable))+
+  geom_line(data = Montezuma.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_line(data = Mt.Brukkaros.annual.alpha, aes(x = month, y = values, color = variable)) +
+  geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
+                xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  geom_rect(aes(xmin = as.Date("1924-11-24", format = '%Y-%m-%d'), 
+                xmax = as.Date("1925-05-26", format = '%Y-%m-%d'), 
+                ymin = -Inf, ymax = Inf), 
+          color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
+  annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
+  geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
+  y = .2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
+  y = .2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') + 
+  scale_y_continuous(limits = c(-0.05,0.2)) +    
+  scale_color_viridis_d(option = "viridis", 
+                        guide = guide_legend(override.aes = list(size = 3,alpha = 1),
+                        title = "Wavelength [nm]"), 
+                        label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
+                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '990 -1010', '1190 - 1210', '1590 - 1610')) +
+  theme_light() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+# PDFs
+
+## Northern Hemisphere
+
+```{r}
+pdf('../../analysis/Time_Lines/Northern.Timeline.trans.pdf',
+    width = 15, height = 6)
+northern.timeline.trans
+dev.off()
+
+pdf('../../analysis/Time_Lines/Northern.Timeline.od.pdf',
+    width = 15, height = 6)
+northern.timeline.od 
+dev.off()
+
+pdf('../../analysis/Time_Lines/Northern.Timeline.alpha.pdf',
+    width = 15, height = 6)
+northern.timeline.alpha
+dev.off()
+```
+
+## Southern Hemisphere
+
+```{r}
+pdf('../../analysis/Time_Lines/Southern.Timeline.trans.pdf',
+    width = 15, height = 6)
+southern.timeline.trans
+dev.off()
+
+pdf('../../analysis/Time_Lines/Southern.Timeline.od.pdf',
+    width = 15, height = 6)
+southern.timeline.od 
+dev.off()
+
+pdf('../../analysis/Time_Lines/Southern.Timeline.alpha.pdf',
+    width = 15, height = 6)
+southern.timeline.alpha
+dev.off()
+```
