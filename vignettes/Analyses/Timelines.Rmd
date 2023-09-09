@@ -33,7 +33,7 @@ conflicts_prefer(yardstick::rmse)
 
 ## Read the data
 
-```{r}
+```{r read_trans_data, message=FALSE, error=FALSE, warning=FALSE}
 Washington.annual <- read_csv('../../data/trans_Timeline/Washington.ok.csv')
 
 Mt.Wilson.annual <- read_csv('../../data/trans_Timeline/Mt.Wilson.ok.csv')
@@ -47,7 +47,7 @@ Table_Mountain.annual <- read_csv('../../data/trans_Timeline/Table_Mountain.ok.c
 
 ## Transform all data set for Transmisison
 
-```{r}
+```{r transform_trans, message=FALSE, error=FALSE, warning=FALSE}
 selections <- c('Date', 'lambda_1', 'trans_1', 'lambda_2', 'trans_2', 'lambda_3',
                 'trans_3','lambda_4', 'trans_4', 'lambda_5', 'trans_5', 'lambda_6', 
                 'trans_6', 'lambda_7', 'trans_7','lambda_8', 'trans_8', 'lambda_9', 
@@ -66,7 +66,10 @@ dplyr::rename(c('lambda_2' = 'lambda1...m.', 'lambda_3' = 'lambda2...m.',
                 'trans_8' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::select(selections) |>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>
+  dplyr::select(selections) 
+  
+Washington.annual.long <- Washington.annual  |>
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -76,7 +79,7 @@ dplyr::rename(c('lambda_2' = 'lambda1...m.', 'lambda_3' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  group_by(variable, Date)|>
   summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
 
 
@@ -92,7 +95,10 @@ dplyr::rename(c('lambda_1' = 'lambda_350', 'lambda_2' = 'lambda_400',
                 'trans_6' = 'trans_700','trans_7' = 'trans_800',
                 'trans_8' = 'trans_900','trans_9' = 'trans_1000',
                 'trans_10' = 'trans_1200','trans_11' = 'trans_1600'))|>
-  dplyr::select(selections) |>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
+  dplyr::select(selections)
+  
+Mt.Wilson.annual.long <- Mt.Wilson.annual|>  
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -102,7 +108,7 @@ dplyr::rename(c('lambda_1' = 'lambda_350', 'lambda_2' = 'lambda_400',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>  
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  group_by(variable, Date)|>
   summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
 
 
@@ -119,7 +125,10 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::select(selections) |>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
+  dplyr::select(selections)
+
+Hump_Mountain.annual.long <- Hump_Mountain.annual|>
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -129,7 +138,7 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  group_by(variable, Date)|>
   summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
 
 Haraqua_Hala.annual <- Haraqua_Hala.annual|>
@@ -145,7 +154,10 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::select(selections) |>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
+  dplyr::select(selections)
+
+Haraqua_Hala.annual.long <- Haraqua_Hala.annual|>    
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -155,7 +167,7 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  group_by(variable, Date)|>
   summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
 
 Table_Mountain.annual <- Table_Mountain.annual|>
@@ -171,7 +183,10 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::select(selections) |>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
+  dplyr::select(selections)
+
+Table_Mountain.annual.long <- Table_Mountain.annual|>
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -181,32 +196,34 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
+  group_by(variable, Date)|>
   summarise_at(vars(values), funs(mean(., na.rm = TRUE))) 
+
+
 ```
 
 ## Transform all data sets for Optical Depth
 
 ```{r}
-Washington.annual.od <- Washington.annual|>
+Washington.annual.long.od <- Washington.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Mt.Wilson.annual.od <- Mt.Wilson.annual|>
+Mt.Wilson.annual.long.od <- Mt.Wilson.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Hump_Mountain.annual.od <- Hump_Mountain.annual|>
+Hump_Mountain.annual.long.od <- Hump_Mountain.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Haraqua_Hala.annual.od <- Haraqua_Hala.annual|>
+Haraqua_Hala.annual.long.od <- Haraqua_Hala.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Table_Mountain.annual.od <- Table_Mountain.annual|>
+Table_Mountain.annual.long.od <- Table_Mountain.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 ```
 
 ## Transform all data sets for Ångström Parameter
 
-```{r}
+```{r transform_alpha, message=FALSE, error=FALSE, warning=FALSE}
 Washington.annual.alpha <- read_csv('../../data/alpha_timeline/Washington.alpha.csv')
 
 Mt.Wilson.annual.alpha <- read_csv('../../data/alpha_timeline/Mt.Wilson.alpha.csv')
@@ -290,6 +307,118 @@ northern.timeline.trans <- ggplot()+
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
 ```
 
+#### Extract Transmission Signal
+
+```{r}
+# Make your own filter
+mutate <- c("trans_1", "trans_2", "trans_3", "trans_4", 
+                           "trans_5", "trans_6", "trans_7", "trans_8",
+                           "trans_9", "trans_10", "trans_11")
+
+# Function
+signal.extractor <- function(data1, row_1 = 1, row_2 = 2) {
+  new <- NULL
+  for(i in 1:ncol(data1)) { 
+  new <- c(new, round(((data1[row_2, i] - data1[row_1, i])/data1[row_1, i]), digits = 3))
+  }
+  data1[nrow(data1) + 1,] <- new
+  data1 <- data1|>slice(n())|>dplyr::rename(c('350 nm' = "trans_1_Mean", '400nm' = "trans_2_Mean", 
+                                              '450 nm' = "trans_3_Mean", '500 nm' = "trans_4_Mean", 
+                                              '600 nm' = "trans_5_Mean" , '700 nm'="trans_6_Mean",
+                                              '800 nm' = "trans_7_Mean", '900 nm' = "trans_8_Mean", 
+                                              '1000 nm' = "trans_9_Mean",'1200 nm' = "trans_10_Mean",
+                                              '1600 nm' = "trans_11_Mean"))
+  return(data1)
+}
+
+# Washington --> 1902 to 1903 (Santa Maria)
+signal.extractor(Washington.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 2) |>
+    mean_row(na.rm = TRUE)
+
+# Mt.Wilson --> 1906 to 1908 (Ksudach)
+signal.extractor(Mt.Wilson.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 3) |>
+    mean_row(na.rm = TRUE)
+
+# Mt.Wilson --> 1911 to 1912 (Novaruptu)
+signal.extractor(Mt.Wilson.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 6, 7)|>
+    mean_row(na.rm = TRUE)
+    
+# Mt.Wilson --> 1917 to 1918 (Katla)
+signal.extractor(Mt.Wilson.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 12, 13)|>
+    mean_row(na.rm = TRUE)
+
+# Haraqua Hala --> 1924 to 1925 ( Raikoke)
+signal.extractor(Haraqua_Hala.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 5, 6)|>
+    mean_row(na.rm = TRUE)
+```
+
+#### Statistics
+
+```{r}
+Washington.annual.long|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Mt.Wilson.annual.long|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Haraqua_Hala.annual.long|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Table_Mountain.annual.long|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+```
+
 ### Timeline with Optical Depth
 
 ```{r}
@@ -358,6 +487,102 @@ northern.timeline.od <- ggplot()+
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+#### Extract Optical Depth Signal
+
+```{r transform_od, message=FALSE, error=FALSE, warning=FALSE}
+# Washington --> 1902 to 1903 (Santa Maria)
+signal.extractor(Washington.annual|>
+    dplyr::mutate_at(mutate , ~-log(.)) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 2) |>
+    mean_row(na.rm = TRUE)
+
+# Mt.Wilson --> 1906 to 1908 (Ksudach)
+signal.extractor(Mt.Wilson.annual|>
+    dplyr::mutate_at(mutate , ~-log(.))|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 3) |>
+    mean_row(na.rm = TRUE)
+
+# Mt.Wilson --> 1911 to 1912 (Novaruptu)
+signal.extractor(Mt.Wilson.annual|>
+    dplyr::mutate_at(mutate , ~-log(.))|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 6, 7)|>
+    mean_row(na.rm = TRUE)
+    
+# Mt.Wilson --> 1917 to 1918 (Katla)
+signal.extractor(Mt.Wilson.annual|>
+    dplyr::mutate_at(mutate , ~-log(.))|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 12, 13)|>
+    mean_row(na.rm = TRUE)
+
+# Haraqua Hala --> 1924 to 1925 ( Raikoke)
+signal.extractor(Haraqua_Hala.annual|>
+    dplyr::mutate_at(mutate , ~-log(.))|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 5, 6)|>
+    mean_row(na.rm = TRUE)
+```
+
+#### Statistics
+
+```{r}
+Washington.annual.long.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Mt.Wilson.annual.long.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Haraqua_Hala.annual.long.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Table_Mountain.annual.long.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
 ```
 
 ### Timeline with Ångström Parameter
@@ -596,6 +821,46 @@ southern.timeline.trans <- ggplot()+
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
 ```
 
+#### Statistics
+
+```{r}
+Calama.annual|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Montezuma.annual|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Mt.Brukkaros.annual|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+```
+
 ### Timeline with Optical Depth
 
 ```{r}
@@ -635,6 +900,46 @@ southern.timeline.od <- ggplot()+
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+```
+
+#### Statistics
+
+```{r}
+Calama.annual.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Montezuma.annual.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
+
+Mt.Brukkaros.annual.od|>
+  group_by(variable) |>
+  summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
+                                  Max = max(., na.rm = TRUE), 
+                                  Median = median(., na.rm = TRUE),
+                                  Mean = mean(., na.rm = TRUE),
+                                  Std = sd(., na.rm = TRUE),
+                                  IQR = IQR(.,na.rm = TRUE),
+                                  Span = max(., na.rm = TRUE) - min(., na.rm = TRUE),
+                                  '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
+                                  '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
 ```
 
 ### Timeline with Ångström Parameter
