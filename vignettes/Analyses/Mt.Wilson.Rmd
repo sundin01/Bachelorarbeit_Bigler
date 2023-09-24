@@ -170,6 +170,11 @@ transmission <- Mt.Wilson_long|>
   dplyr::filter(variable == 'trans_350' | variable == 'trans_400' | variable == 'trans_450' |
                   variable == 'trans_600' | variable == 'trans_700' 
                 | variable == 'trans_1600')
+	
+(((0.9758991-0.013588493)/0.9758991)*100)-100
+
+(((0.6021333-0.054709384)/0.6021333)*100)-100
+
 ################################################################################
 trans_annual_mean <- Mt.Wilson_long|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
@@ -371,7 +376,7 @@ Mt.Wilson.1908.trans <- Mt.Wilson_long|>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
-  geom_line(aes(x = Date, y = rolling_avg, color = variable)) +
+  geom_line(aes(x = Date, y = rolling_avg, color = variable), cex.lab=1.5, cex.axis=1.5) +
   geom_point(aes(x = Date, y = values, color = variable), alpha = 0.2) +
   labs(x = 'Time [month]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
@@ -461,8 +466,6 @@ ggplot()+
   stat_boxplot(aes(x = variable, y = values),
   geom='errorbar', linetype = 1, width = 0.5) +
   geom_jitter(aes(x = variable, y = values), size = .5, width = 0, alpha = .1) +
-  geom_smooth(data = theoretical.values, aes(x = lambda, y = normal_irradiation), se = FALSE,
-              linewidth = 0.5) +
   scale_x_discrete(labels = c(350, 400, 450, 500, 600, 700, 800, 
                               900,1000, 1200, 1600)) +
   labs(x = 'Wavelength [nm]', y = 'Transmission [ ]') +
@@ -985,7 +988,7 @@ annual_alpha
 
 ```{r PDF_transmission, message=FALSE, error=FALSE, warning=FALSE}
 pdf('../../analysis/Mt.Wilson/Transmission/Mt.Wilson.1905.1920.trans.pdf',
-    width = 25 / 2.54, height = 15 / 2.54)
+        width = 8  , height = 5)
 Mt.Wilson.1905.1920.trans
 dev.off()
 

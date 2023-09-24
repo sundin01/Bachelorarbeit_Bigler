@@ -27,6 +27,7 @@ conflicts_prefer(dplyr::mutate)
 conflicts_prefer(lubridate::stamp)
 conflicts_prefer(recipes::fixed)
 conflicts_prefer(yardstick::rmse)
+conflicts_prefer(ggplot2::vars)
 ```
 
 # Northern Hemisphere
@@ -43,6 +44,25 @@ Hump_Mountain.annual <- read_csv('../../data/trans_Timeline/Hump_Mountain.ok.csv
 Haraqua_Hala.annual <- read_csv('../../data/trans_Timeline/Haraqua_Hala.ok.csv')
 
 Table_Mountain.annual <- read_csv('../../data/trans_Timeline/Table_Mountain.ok.csv')
+
+Washington.annual|>
+  dplyr::filter(Date > as.Date("1902-01-01") & Date < as.Date("1903-12-31"))
+
+
+Mt.Wilson.annual|>
+  dplyr::filter(Date > as.Date("1907-01-01") & Date < as.Date("1913-08-31"))
+
+
+Mt.Wilson.annual|>
+  dplyr::filter(Date > as.Date("1912-01-01") & Date < as.Date("1913-12-31"))
+
+
+Mt.Wilson.annual|>
+  dplyr::filter(Date > as.Date("1918-01-01") & Date < as.Date("1919-12-31"))
+
+Haraqua_Hala.annual|>
+  dplyr::filter(Date > as.Date("1924-01-01") & Date < as.Date("1925-12-31"))
+
 ```
 
 ## Transform all data set for Transmisison
@@ -66,8 +86,9 @@ dplyr::rename(c('lambda_2' = 'lambda1...m.', 'lambda_3' = 'lambda2...m.',
                 'trans_8' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>
-  dplyr::select(selections) 
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>
+  dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
   
 Washington.annual.long <- Washington.annual  |>
   pivot_longer(cols = starts_with('t'),
@@ -80,7 +101,9 @@ Washington.annual.long <- Washington.annual  |>
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
   group_by(variable, Date)|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
 
 
 Mt.Wilson.annual <- Mt.Wilson.annual|>
@@ -95,8 +118,9 @@ dplyr::rename(c('lambda_1' = 'lambda_350', 'lambda_2' = 'lambda_400',
                 'trans_6' = 'trans_700','trans_7' = 'trans_800',
                 'trans_8' = 'trans_900','trans_9' = 'trans_1000',
                 'trans_10' = 'trans_1200','trans_11' = 'trans_1600'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
-  dplyr::select(selections)
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>  
+  dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
   
 Mt.Wilson.annual.long <- Mt.Wilson.annual|>  
   pivot_longer(cols = starts_with('t'),
@@ -109,7 +133,9 @@ Mt.Wilson.annual.long <- Mt.Wilson.annual|>
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>  
   group_by(variable, Date)|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
 
 
 Hump_Mountain.annual <- Hump_Mountain.annual|>
@@ -125,8 +151,9 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
-  dplyr::select(selections)
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>  
+  dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
 Hump_Mountain.annual.long <- Hump_Mountain.annual|>
   pivot_longer(cols = starts_with('t'),
@@ -139,7 +166,9 @@ Hump_Mountain.annual.long <- Hump_Mountain.annual|>
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
   group_by(variable, Date)|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) 
 
 Haraqua_Hala.annual <- Haraqua_Hala.annual|>
   dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|> 
@@ -154,8 +183,9 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
-  dplyr::select(selections)
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>   
+  dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
 Haraqua_Hala.annual.long <- Haraqua_Hala.annual|>    
   pivot_longer(cols = starts_with('t'),
@@ -168,7 +198,9 @@ Haraqua_Hala.annual.long <- Haraqua_Hala.annual|>
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
   group_by(variable, Date)|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))  
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) 
 
 Table_Mountain.annual <- Table_Mountain.annual|>
   dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|> 
@@ -183,8 +215,9 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
-  dplyr::select(selections)
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>   
+  dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
 Table_Mountain.annual.long <- Table_Mountain.annual|>
   pivot_longer(cols = starts_with('t'),
@@ -197,7 +230,9 @@ Table_Mountain.annual.long <- Table_Mountain.annual|>
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>    
   group_by(variable, Date)|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) 
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
 
 
 ```
@@ -243,14 +278,14 @@ Table_Mountain.annual.alpha <- read_csv('../../data/alpha_timeline/Table_Mountai
 conflicts_prefer(data.table::month)
 
 northern.timeline.trans <- ggplot()+
-  geom_point(data = Washington.annual, aes(x = month, y = values, color = variable))+
-  geom_point(data = Mt.Wilson.annual, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Haraqua_Hala.annual, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Table_Mountain.annual, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Washington.annual, aes(x = month, y = values, color = variable))+
-  geom_line(data = Mt.Wilson.annual, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Haraqua_Hala.annual, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Table_Mountain.annual, aes(x = month, y = values, color = variable)) +  
+  geom_point(data = Washington.annual.long, aes(x = Date, y = values, color = variable))+
+  geom_point(data = Mt.Wilson.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Haraqua_Hala.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Table_Mountain.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Washington.annual.long, aes(x = Date, y = values, color = variable))+
+  geom_line(data = Mt.Wilson.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Haraqua_Hala.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Table_Mountain.annual.long, aes(x = Date, y = values, color = variable)) +  
   geom_rect(aes(xmin = as.Date("1902-10-19", format = '%Y-%m-%d'), 
                 xmax = as.Date("1904-04-20", format = '%Y-%m-%d'), 
                 ymin = -Inf, ymax = Inf), 
@@ -311,60 +346,66 @@ northern.timeline.trans <- ggplot()+
 
 ```{r}
 # Make your own filter
-mutate <- c("trans_1", "trans_2", "trans_3", "trans_4", 
-                           "trans_5", "trans_6", "trans_7", "trans_8",
-                           "trans_9", "trans_10", "trans_11")
+mutate <- c("trans_1", "trans_2", "trans_3", "trans_4", "trans_5", "trans_6", "trans_7",
+            "trans_8", "trans_9", "trans_10", "trans_11")
 
 # Function
 signal.extractor <- function(data1, row_1 = 1, row_2 = 2) {
   new <- NULL
   for(i in 1:ncol(data1)) { 
-  new <- c(new, round(((data1[row_2, i] - data1[row_1, i])/data1[row_1, i]), digits = 3))
+  new <- c(new, round(((data1[row_2, i] - data1[row_1, i])/data1[row_1, i])*100, digits = 3))
   }
   data1[nrow(data1) + 1,] <- new
-  data1 <- data1|>slice(n())|>dplyr::rename(c('350 nm' = "trans_1_Mean", '400nm' = "trans_2_Mean", 
-                                              '450 nm' = "trans_3_Mean", '500 nm' = "trans_4_Mean", 
-                                              '600 nm' = "trans_5_Mean" , '700 nm'="trans_6_Mean",
-                                              '800 nm' = "trans_7_Mean", '900 nm' = "trans_8_Mean", 
-                                              '1000 nm' = "trans_9_Mean",'1200 nm' = "trans_10_Mean",
-                                              '1600 nm' = "trans_11_Mean"))
-  return(data1)
+  temp.df <- data1|>
+    slice(n())|>
+    dplyr::rename(c('350 nm' = "trans_1_mean",'400 nm' = "trans_2_mean", 
+                    '450 nm' = "trans_3_mean",'500 nm' = "trans_4_mean", 
+                    '600 nm' = "trans_5_mean",'700 nm' = "trans_6_mean",
+                    '800 nm' = "trans_7_mean",'900 nm' = "trans_8_mean", 
+                    '1000 nm' = "trans_9_mean",'1200 nm' = "trans_10_mean",
+                    '1600 nm' = "trans_11_mean"))
+  return(temp.df)
 }
 
 # Washington --> 1902 to 1903 (Santa Maria)
-signal.extractor(Washington.annual|>
+SantaMaria.t <- c('Santa Maria',signal.extractor(Washington.annual|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 1, 2) |>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 2))# |>
+    #rowMeans(na.rm = TRUE)
 
 # Mt.Wilson --> 1906 to 1908 (Ksudach)
-signal.extractor(Mt.Wilson.annual|>
+Ksudach.t <- c('Ksudach',signal.extractor(Mt.Wilson.annual|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 1, 3) |>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 3))# |>
+    #rowMeans(na.rm = TRUE)
 
 # Mt.Wilson --> 1911 to 1912 (Novaruptu)
-signal.extractor(Mt.Wilson.annual|>
+Novarupta.t <- c('Novarupta',signal.extractor(Mt.Wilson.annual|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 6, 7)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 6, 7))#|>
+    #rowMeans(na.rm = TRUE)
     
 # Mt.Wilson --> 1917 to 1918 (Katla)
-signal.extractor(Mt.Wilson.annual|>
+Katla.t <- c('Katla',signal.extractor(Mt.Wilson.annual|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 12, 13)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 12, 13))#|>
+    #rowMeans(na.rm = TRUE)
 
 # Haraqua Hala --> 1924 to 1925 ( Raikoke)
-signal.extractor(Haraqua_Hala.annual|>
+Raikoke.t <- c('Raikoke',signal.extractor(Haraqua_Hala.annual|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 5, 6)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 5, 6))#|>
+    #rowMeans(na.rm = TRUE)
+
+kable(do.call("rbind", list(SantaMaria.t, Ksudach.t, 
+                      Novarupta.t, Katla.t, Raikoke.t)),
+      align = c('l', rep('c', times = 11)))|>
+  kable_classic()
 ```
 
 #### Statistics
@@ -425,14 +466,14 @@ Table_Mountain.annual.long|>
 conflicts_prefer(data.table::month)
 
 northern.timeline.od <- ggplot()+
-  geom_point(data = Washington.annual.od, aes(x = month, y = values, color = variable))+
-  geom_point(data = Mt.Wilson.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Haraqua_Hala.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Table_Mountain.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Washington.annual.od, aes(x = month, y = values, color = variable))+
-  geom_line(data = Mt.Wilson.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Haraqua_Hala.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Table_Mountain.annual.od, aes(x = month, y = values, color = variable)) +  
+  geom_point(data = Washington.annual.long.od, aes(x = Date, y = values, color = variable))+
+  geom_point(data = Mt.Wilson.annual.long.od, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Haraqua_Hala.annual.long.od, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Table_Mountain.annual.long.od,aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Washington.annual.long.od, aes(x = Date, y = values, color = variable))+
+  geom_line(data = Mt.Wilson.annual.long.od, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Haraqua_Hala.annual.long.od, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Table_Mountain.annual.long.od, aes(x = Date,y = values, color = variable)) + 
   geom_rect(aes(xmin = as.Date("1902-10-19", format = '%Y-%m-%d'), 
                 xmax = as.Date("1904-04-20", format = '%Y-%m-%d'), 
                 ymin = -Inf, ymax = Inf), 
@@ -493,44 +534,49 @@ northern.timeline.od <- ggplot()+
 
 ```{r transform_od, message=FALSE, error=FALSE, warning=FALSE}
 # Washington --> 1902 to 1903 (Santa Maria)
-signal.extractor(Washington.annual|>
+SantaMaria.od <- c('Santa Maria',signal.extractor(Washington.annual|>
     dplyr::mutate_at(mutate , ~-log(.)) |>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 1, 2) |>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 2))# |>
+    #mean_row(na.rm = TRUE)
 
 # Mt.Wilson --> 1906 to 1908 (Ksudach)
-signal.extractor(Mt.Wilson.annual|>
+Ksudach.od <- c('Ksudach',signal.extractor(Mt.Wilson.annual|>
     dplyr::mutate_at(mutate , ~-log(.))|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 1, 3) |>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 3))# |>
+    #mean_row(na.rm = TRUE)
 
 # Mt.Wilson --> 1911 to 1912 (Novaruptu)
-signal.extractor(Mt.Wilson.annual|>
+Novarupta.od <- c('Novarupta',signal.extractor(Mt.Wilson.annual|>
     dplyr::mutate_at(mutate , ~-log(.))|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 6, 7)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 6, 7))#|>
+    #mean_row(na.rm = TRUE)
     
 # Mt.Wilson --> 1917 to 1918 (Katla)
-signal.extractor(Mt.Wilson.annual|>
+Katla.od <- c('Katla',signal.extractor(Mt.Wilson.annual|>
     dplyr::mutate_at(mutate , ~-log(.))|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 12, 13)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 12, 13))#|>
+    #mean_row(na.rm = TRUE)
 
 # Haraqua Hala --> 1924 to 1925 ( Raikoke)
-signal.extractor(Haraqua_Hala.annual|>
+Raikoke.od <- c('Raikoke',signal.extractor(Haraqua_Hala.annual|>
     dplyr::mutate_at(mutate , ~-log(.))|>
     group_by(Date)|>
-    summarise_at(vars(mutate), funs(Mean = mean(., na.rm = TRUE)))|>
-    dplyr::select(-'Date'), 5, 6)|>
-    mean_row(na.rm = TRUE)
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 5, 6))#|>
+    #mean_row(na.rm = TRUE)
+
+kable(do.call("rbind", list(SantaMaria.od, Ksudach.od, 
+                      Novarupta.od, Katla.od, Raikoke.od)),
+      align = c('l', rep('c', times = 11)))|>
+  kable_classic()
 ```
 
 #### Statistics
@@ -656,6 +702,134 @@ northern.timeline.alpha <- ggplot()+
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
 ```
 
+#### Extract Ångström Signal
+
+```{r}
+
+# Make your own filter
+mutate.alpha <- c("alpha_350", "alpha_400", "alpha_450", "alpha_500", "alpha_600", "alpha_700",
+                  "alpha_800","alpha_900", "alpha_1200", "alpha_1600")
+
+# Function
+signal.extractor.alpha <- function(data1, row_1 = 1, row_2 = 2) {
+  new <- NULL
+  for(i in 1:ncol(data1)) { 
+  new <- c(new, round(((data1[row_2, i] - data1[row_1, i])/data1[row_1, i])*100, digits = 3))
+  }
+  data1[nrow(data1) + 1,] <- new
+  temp.df <- data1|>
+    slice(n())|>
+    dplyr::rename(c('350 nm' = "alpha_350_mean",'400 nm' = "alpha_400_mean", 
+                    '450 nm' = "alpha_450_mean",'500 nm' = "alpha_500_mean", 
+                    '600 nm' = "alpha_600_mean",'700 nm' = "alpha_700_mean",
+                    '800 nm' = "alpha_800_mean",'900 nm' = "alpha_900_mean", 
+                    '1200 nm' = "alpha_1200_mean",'1600 nm' = "alpha_1600_mean"))
+  return(temp.df)
+}
+
+# Washington --> 1902 to 1903 (Santa Maria)
+SantaMaria.a <- c('Santa Maria',signal.extractor.alpha(Washington.annual|>
+  dplyr::mutate(
+    alpha_350=-(log(Washington.annual$trans_1)-log(Washington.annual$trans_9))/log(350),
+    alpha_400=-(log(Washington.annual$trans_2)-log(Washington.annual$trans_9))/log(400),
+    alpha_450=-(log(Washington.annual$trans_3)-log(Washington.annual$trans_9))/log(450),
+    alpha_500=-(log(Washington.annual$trans_4)-log(Washington.annual$trans_9))/log(500),
+    alpha_600=-(log(Washington.annual$trans_5)-log(Washington.annual$trans_9))/log(600),
+    alpha_700=-(log(Washington.annual$trans_6)-log(Washington.annual$trans_9))/log(700),
+    alpha_800=-(log(Washington.annual$trans_7)-log(Washington.annual$trans_9))/log(800),
+    alpha_900=-(log(Washington.annual$trans_8)-log(Washington.annual$trans_9))/log(900),
+    alpha_1200=-(log(Washington.annual$trans_10)-log(Washington.annual$trans_9))/log(1200),
+    alpha_1600=-(log(Washington.annual$trans_11)-log(Washington.annual$trans_9))/log(1600))|>
+    dplyr::select(c('Date', starts_with('a'))) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate.alpha), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 2))# |>
+    #rowMeans(na.rm = TRUE)
+
+# Mt.Wilson --> 1906 to 1908 (Ksudach)
+Ksudach.a <- c('Ksudach',signal.extractor.alpha(Mt.Wilson.annual|>
+  dplyr::mutate(
+    alpha_350=-(log(Mt.Wilson.annual$trans_1)-log(Mt.Wilson.annual$trans_9))/log(350),
+    alpha_400=-(log(Mt.Wilson.annual$trans_2)-log(Mt.Wilson.annual$trans_9))/log(400),
+    alpha_450=-(log(Mt.Wilson.annual$trans_3)-log(Mt.Wilson.annual$trans_9))/log(450),
+    alpha_500=-(log(Mt.Wilson.annual$trans_4)-log(Mt.Wilson.annual$trans_9))/log(500),
+    alpha_600=-(log(Mt.Wilson.annual$trans_5)-log(Mt.Wilson.annual$trans_9))/log(600),
+    alpha_700=-(log(Mt.Wilson.annual$trans_6)-log(Mt.Wilson.annual$trans_9))/log(700),
+    alpha_800=-(log(Mt.Wilson.annual$trans_7)-log(Mt.Wilson.annual$trans_9))/log(800),
+    alpha_900=-(log(Mt.Wilson.annual$trans_8)-log(Mt.Wilson.annual$trans_9))/log(900),
+    alpha_1200=-(log(Mt.Wilson.annual$trans_10)-log(Mt.Wilson.annual$trans_9))/log(1200),
+    alpha_1600=-(log(Mt.Wilson.annual$trans_11)-log(Mt.Wilson.annual$trans_9))/log(1600))|>
+    dplyr::select(c('Date', starts_with('a'))) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate.alpha), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 1, 3))# |>
+    #rowMeans(na.rm = TRUE)
+
+# Mt.Wilson --> 1911 to 1912 (Novaruptu)
+Novarupta.a <- c('Novarupta',signal.extractor.alpha(Mt.Wilson.annual|>
+  dplyr::mutate(
+    alpha_350=-(log(Mt.Wilson.annual$trans_1)-log(Mt.Wilson.annual$trans_9))/log(350),
+    alpha_400=-(log(Mt.Wilson.annual$trans_2)-log(Mt.Wilson.annual$trans_9))/log(400),
+    alpha_450=-(log(Mt.Wilson.annual$trans_3)-log(Mt.Wilson.annual$trans_9))/log(450),
+    alpha_500=-(log(Mt.Wilson.annual$trans_4)-log(Mt.Wilson.annual$trans_9))/log(500),
+    alpha_600=-(log(Mt.Wilson.annual$trans_5)-log(Mt.Wilson.annual$trans_9))/log(600),
+    alpha_700=-(log(Mt.Wilson.annual$trans_6)-log(Mt.Wilson.annual$trans_9))/log(700),
+    alpha_800=-(log(Mt.Wilson.annual$trans_7)-log(Mt.Wilson.annual$trans_9))/log(800),
+    alpha_900=-(log(Mt.Wilson.annual$trans_8)-log(Mt.Wilson.annual$trans_9))/log(900),
+    alpha_1200=-(log(Mt.Wilson.annual$trans_10)-log(Mt.Wilson.annual$trans_9))/log(1200),
+    alpha_1600=-(log(Mt.Wilson.annual$trans_11)-log(Mt.Wilson.annual$trans_9))/log(1600))|>
+    dplyr::select(c('Date', starts_with('a'))) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate.alpha), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 6, 7))# |>
+    #rowMeans(na.rm = TRUE)
+
+# Mt.Wilson --> 1917 to 1918 (Katla)
+Katla.a <- c('Katla',signal.extractor.alpha(Mt.Wilson.annual|>
+  dplyr::mutate(
+    alpha_350=-(log(Mt.Wilson.annual$trans_1)-log(Mt.Wilson.annual$trans_9))/log(350),
+    alpha_400=-(log(Mt.Wilson.annual$trans_2)-log(Mt.Wilson.annual$trans_9))/log(400),
+    alpha_450=-(log(Mt.Wilson.annual$trans_3)-log(Mt.Wilson.annual$trans_9))/log(450),
+    alpha_500=-(log(Mt.Wilson.annual$trans_4)-log(Mt.Wilson.annual$trans_9))/log(500),
+    alpha_600=-(log(Mt.Wilson.annual$trans_5)-log(Mt.Wilson.annual$trans_9))/log(600),
+    alpha_700=-(log(Mt.Wilson.annual$trans_6)-log(Mt.Wilson.annual$trans_9))/log(700),
+    alpha_800=-(log(Mt.Wilson.annual$trans_7)-log(Mt.Wilson.annual$trans_9))/log(800),
+    alpha_900=-(log(Mt.Wilson.annual$trans_8)-log(Mt.Wilson.annual$trans_9))/log(900),
+    alpha_1200=-(log(Mt.Wilson.annual$trans_10)-log(Mt.Wilson.annual$trans_9))/log(1200),
+    alpha_1600=-(log(Mt.Wilson.annual$trans_11)-log(Mt.Wilson.annual$trans_9))/log(1600))|>
+    dplyr::select(c('Date', starts_with('a'))) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate.alpha), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 12, 13))# |>
+    #rowMeans(na.rm = TRUE)
+
+# Haraqua Hala --> 1924 to 1925 ( Raikoke)
+Raikoke.a <- c('Raikoke',signal.extractor.alpha(Haraqua_Hala.annual|>
+  dplyr::mutate(
+    alpha_350=-(log(Haraqua_Hala.annual$trans_1)-log(Haraqua_Hala.annual$trans_9))/log(350),
+    alpha_400=-(log(Haraqua_Hala.annual$trans_2)-log(Haraqua_Hala.annual$trans_9))/log(400),
+    alpha_450=-(log(Haraqua_Hala.annual$trans_3)-log(Haraqua_Hala.annual$trans_9))/log(450),
+    alpha_500=-(log(Haraqua_Hala.annual$trans_4)-log(Haraqua_Hala.annual$trans_9))/log(500),
+    alpha_600=-(log(Haraqua_Hala.annual$trans_5)-log(Haraqua_Hala.annual$trans_9))/log(600),
+    alpha_700=-(log(Haraqua_Hala.annual$trans_6)-log(Haraqua_Hala.annual$trans_9))/log(700),
+    alpha_800=-(log(Haraqua_Hala.annual$trans_7)-log(Haraqua_Hala.annual$trans_9))/log(800),
+    alpha_900=-(log(Haraqua_Hala.annual$trans_8)-log(Haraqua_Hala.annual$trans_9))/log(900),
+    alpha_1200=-(log(Haraqua_Hala.annual$trans_10)-
+                   log(Haraqua_Hala.annual$trans_9))/log(1200),
+    alpha_1600=-(log(Haraqua_Hala.annual$trans_11)-
+                   log(Haraqua_Hala.annual$trans_9))/log(1600))|>
+    dplyr::select(c('Date', starts_with('a'))) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate.alpha), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 5, 6))# |>
+    #rowMeans(na.rm = TRUE)
+
+kable(do.call("rbind", list(SantaMaria.a, Ksudach.a, 
+                      Novarupta.a, Katla.a, Raikoke.a)),
+      align = c('l', rep('c', times = 11)))|>
+  kable_classic()
+```
+
 # Southern Hemisphere
 
 ## Read the data
@@ -689,7 +863,11 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
   dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
+  
+Calama.annual.long <- Calama.annual|>  
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -699,8 +877,10 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+  group_by(variable, Date)|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
 
 Montezuma.annual <- Montezuma.annual|>
 dplyr::mutate('lambda_8' = 0.9, 'trans_8' = NA)|>  
@@ -715,7 +895,11 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
   dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
+  
+Montezuma.annual.long <- Montezuma.annual|>
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -725,8 +909,13 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+  group_by(variable, Date)|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
+
+Montezuma.annual|>
+  dplyr::filter(Date == as.Date("1922-01-01"))
 
 Mt.Brukkaros.annual <- Mt.Brukkaros.annual|>
 dplyr::mutate('lambda_9' = 1, 'trans_9' = NA)|>  
@@ -741,7 +930,11 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
   dplyr::select(selections) |>
+  dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
+
+Mt.Brukkaros.annual.long <- Mt.Brukkaros.annual|>
   pivot_longer(cols = starts_with('t'),
                names_to = 'variable',
                values_to = 'values') |>
@@ -751,20 +944,22 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                            "trans_9", "trans_10", "trans_11")))|> 
   dplyr::mutate(values = ifelse(values >= 2, NA, values)) |>
   dplyr::mutate(values = ifelse(values <= 0.1, NA, values)) |>
-  group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-  summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+  group_by(variable, Date)|>
+  summarise_at(vars(values), funs(mean(., na.rm = TRUE))) |>
+  dplyr::mutate(values = ifelse(values >= 1, NA, values)) |>
+  dplyr::mutate(values = ifelse(values <= 0.1, NA, values))
 ```
 
 ## Transform all data sets for Optical Depth
 
 ```{r}
-Calama.annual.od <- Calama.annual|>
+Calama.annual.od <- Calama.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Montezuma.annual.od <- Montezuma.annual|>
+Montezuma.annual.od <- Montezuma.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 
-Mt.Brukkaros.annual.od <- Mt.Brukkaros.annual|>
+Mt.Brukkaros.annual.od <- Mt.Brukkaros.annual.long|>
     dplyr::mutate_at(c('values'), ~-log(.))
 ```
 
@@ -786,12 +981,12 @@ Mt.Brukkaros.annual.alpha <- read_csv('../../data/alpha_timeline/Mt.Brukkaros.al
 conflicts_prefer(data.table::month)
 
 southern.timeline.trans <- ggplot()+
-  geom_point(data = Calama.annual, aes(x = month, y = values, color = variable))+
-  geom_point(data = Montezuma.annual, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Mt.Brukkaros.annual, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Calama.annual, aes(x = month, y = values, color = variable))+
-  geom_line(data = Montezuma.annual, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Mt.Brukkaros.annual, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Calama.annual.long, aes(x = Date, y = values, color = variable))+
+  geom_point(data = Montezuma.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Mt.Brukkaros.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Calama.annual.long, aes(x = Date, y = values, color = variable))+
+  geom_line(data = Montezuma.annual.long, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Mt.Brukkaros.annual.long, aes(x = Date, y = values, color = variable)) +
   geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
                 xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
                 ymin = -Inf, ymax = Inf), 
@@ -801,15 +996,20 @@ southern.timeline.trans <- ggplot()+
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
   annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = .2, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .3, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
   annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
-  y = .2, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  y = .3, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  geom_vline(xintercept = as.numeric(as.Date("1922-01-01")), 
+             linetype = 'dotted', color = 'red')+
+  annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
+  y = .3, label= "potential volcanic event", hjust = 0, vjust = -0.2, 
+  angle = 90, alpha = 0.5, color = 'red') +   
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = .2, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .3, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
-  y = .2, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .3, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
   labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
@@ -824,7 +1024,7 @@ southern.timeline.trans <- ggplot()+
 #### Statistics
 
 ```{r}
-Calama.annual|>
+Calama.annual.long|>
   group_by(variable) |>
   summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
                                   Max = max(., na.rm = TRUE), 
@@ -836,7 +1036,7 @@ Calama.annual|>
                                   '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
                                   '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
 
-Montezuma.annual|>
+Montezuma.annual.long|>
   group_by(variable) |>
   summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
                                   Max = max(., na.rm = TRUE), 
@@ -848,7 +1048,7 @@ Montezuma.annual|>
                                   '0.25.quantile' = quantile(., probs = .25, na.rm = TRUE),
                                   '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
 
-Mt.Brukkaros.annual|>
+Mt.Brukkaros.annual.long|>
   group_by(variable) |>
   summarise_at(vars(values), funs(Min = min(., na.rm = TRUE), 
                                   Max = max(., na.rm = TRUE), 
@@ -861,18 +1061,33 @@ Mt.Brukkaros.annual|>
                                   '0.75.quantile' = quantile(., probs = .75, na.rm = TRUE)))
 ```
 
+#### Signal Extractor Transmission
+
+```{r}
+signal.extractor(Montezuma.annual|>
+    group_by(Date)|>
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 2, 3)
+
+signal.extractor(Montezuma.annual|>
+    dplyr::mutate_at(mutate , ~-log(.)) |>
+    group_by(Date)|>
+    summarise_at(vars(mutate), list(mean = ~ mean(., na.rm = TRUE)))|>
+    dplyr::select(-'Date'), 2, 3)
+```
+
 ### Timeline with Optical Depth
 
 ```{r}
 conflicts_prefer(data.table::month)
 
 southern.timeline.od <- ggplot()+
-  geom_point(data = Calama.annual.od, aes(x = month, y = values, color = variable))+
-  geom_point(data = Montezuma.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_point(data = Mt.Brukkaros.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Calama.annual.od, aes(x = month, y = values, color = variable))+
-  geom_line(data = Montezuma.annual.od, aes(x = month, y = values, color = variable)) +
-  geom_line(data = Mt.Brukkaros.annual.od, aes(x = month, y = values, color = variable)) +
+  geom_point(data = Calama.annual.od, aes(x = Date, y = values, color = variable))+
+  geom_point(data = Montezuma.annual.od, aes(x = Date, y = values, color = variable)) +
+  geom_point(data = Mt.Brukkaros.annual.od, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Calama.annual.od, aes(x = Date, y = values, color = variable))+
+  geom_line(data = Montezuma.annual.od, aes(x = Date, y = values, color = variable)) +
+  geom_line(data = Mt.Brukkaros.annual.od, aes(x = Date, y = values, color = variable)) +
   geom_rect(aes(xmin = as.Date("1918-01-01", format = '%Y-%m-%d'), 
                 xmax = as.Date("1920-03-19", format = '%Y-%m-%d'), 
                 ymin = -Inf, ymax = Inf), 
@@ -887,6 +1102,11 @@ southern.timeline.od <- ggplot()+
   y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
+  geom_vline(xintercept = as.numeric(as.Date("1922-01-01")), 
+             linetype = 'dotted', color = 'red')+
+  annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
+  y = 1.2, label= "potential volcanic event", hjust = 1, vjust = -0.2, 
+  angle = 90, alpha = 0.5, color = 'red') +     
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
   y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),

@@ -15,7 +15,14 @@ editor_options:
 
 # Introduction
 
+Welcome to the introduction in the Bachelor-thesis of Patrick Bigler. Here,
+you can find all data sets which were used in this thesis. You can navigate
+through all locations and redo all analysis.
+
 ## Read packages
+
+This code chunk loads all packages you need. If you have not installed any
+package, it will install it by itself.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/General/packages.R")
@@ -25,10 +32,10 @@ conflicts_prefer(ggplot2::annotate)
 
 ## Read files
 
-Here, we read all digitized data sets. For a comprehensive analysis, it is
-important to have enough data. Therefore, only data sets containing more
-than 40 measurements are used. The following data sets were not considered
-in the analyisis:
+Here, we read all digitized data sets from the ERACLIM project. For a
+comprehensive analysis, it is important to have enough data. Therefore,
+only data sets containing more than 50 measurements are used. The following
+data sets were not considered in the analyisis:
 
 -   Bassour (only 13 measurements)
 
@@ -40,6 +47,8 @@ in the analyisis:
 
 -   Mt. Wilson (only 18 Measurements)
 
+All other data set are in this code chunk:
+
 ```{r Read_all_data, message=FALSE, error=FALSE, warning=FALSE}
 
 Montezuma.1920.1930 <- read.delim("../Data/Montezuma.txt")
@@ -48,7 +57,7 @@ Harqua_Hala.1920.1925 <- read.delim("../Data/Harqua_Hala.txt")
 
 Mt.Wilson.1905.1920 <- read.delim("../Data/Mt_Wilson_1.txt")
 
-Washington.1903.1907 <- read.delim("../Data/Washington_2.txt")
+Washington.1903.1907 <- read.delim("../Data/Washington_1.txt")
 
 Hump_Mountain.1917.1918 <- read.delim("../Data/Hump_Mountain.txt")
 
@@ -57,11 +66,17 @@ Calama.1918.1920 <- read.delim("../Data/Calama.txt")
 Mt.Brukkaros.1926.1930 <- read.delim("../Data/Mt_Brukkaros.txt")
 
 Table.mountain.1925.1930 <- read.delim("../Data/Table_mountain.txt")
+
+################################## data not in use ##################################
+Bassour.1911.1912 <- read.delim("../data/Bassour.txt")
+
+Mt.Whitney.1909.1910 <- read.delim("../data/Mounth_Whitney.txt")
 ```
 
 ## Coordinates-Transformation
 
-Here, we transform coordinates in the WGS84 system
+Here, we transform coordinates in the WGS84 system, because it is easier to
+handle. For that, we wrote a function on a R-script.
 
 ```{r coordinates_transformation, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/function.coordinate.transformation.R")
@@ -113,6 +128,9 @@ greenland.lon <- -51.06
 
 ## Visualize the locations
 
+It is important to visualize the data. Only this way you will have a
+overview about the data quality
+
 ### Summary of all locations
 
 Here, we create a tibble for all location. We need that for mapping the
@@ -144,6 +162,9 @@ c(rep("Ice core",2) ,rep("Volcano",5), rep("Observation station", 8)))
 ```
 
 ### Mapping all locations
+
+Here, we use GGPLOT to create a map with all measurements stations or
+locations of the volcaenos or drill hole for the ice cores:
 
 ```{r mapping_locations, message=FALSE, error=FALSE, warning=FALSE}
 #read the world map
@@ -180,23 +201,6 @@ pdf('../analysis/General/map.pdf',
     width = 8, height = 5)
 overview.plot
 dev.off()
-```
-
-# Theoretical Values
-
-```{r}
-#function for theoretical calculation
-source('../R/General/theoretical_transmission.R')
-
-# Create a sequenze with wavelenth between 0.1nm and 1.6nm
-wavelenghts <- seq(from = 0.1, to = 1.6, by = 0.01)
-
-# Create a sequenze with wavelengths and zenith angle
-values <- transmittance(wavelenghts)
-
-# Put all values in a tibble
-theoretical.values <- tibble("lambda" = wavelenghts,
-                             'normal irradiation' = values)
 ```
 
 # Analyses of the various locations

@@ -187,7 +187,6 @@ alpha_annual_mean <- Washington.alpha.long|>
                 levels = c("alpha_350", "alpha_400", "alpha_450", "alpha_500", 
                            "alpha_600", "alpha_700", "alpha_800", "alpha_900",
                            "alpha_1200", "alpha_1600")))|> 
-    dplyr::filter(variable != 'trans_900') |>
     group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
     summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
 
