@@ -13,7 +13,7 @@ editor_options:
     wrap: 75
 ---
 
-# Introduction 
+# Introduction
 
 Welcome to the introduction in the Bachelor-thesis of Patrick Bigler. Here,
 you can find all data sets which were used in this thesis. You can navigate
@@ -158,7 +158,7 @@ Hump.Mountain.lon),
 c(NA, NA ,2047, 3772, 1512, 1079, 551, 2711, 2250, 2286, 1721,
 1586, 1727, 10, 2250),
 "Legend" =
-c(rep("Ice core",2) ,rep("Volcano",5), rep("Observation station", 8)))
+c(rep("Ice core",2) ,rep("Volcano",5), rep("Measurement station", 8)))
 ```
 
 ### Mapping all locations
@@ -192,7 +192,8 @@ overview.plot <- ggplot() +
   theme(legend.position = c(.98, .035),
       legend.justification = c("right", "bottom"), legend.box.just = "right",
       legend.margin = margin(6, 6, 6, 6)) +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))   
 
 
 overview.plot
@@ -215,7 +216,7 @@ volcanic events.
 Contains 44 measurements between 1902 - 1907 and information about the
 tropical eruption of Santa Maria in 1902-10-24.
 
-```{r open_washington}
+```{r open_washington, eval=FALSE}
 file.edit('../vignettes/Analyses/Washington.Rmd')
 ```
 
@@ -225,7 +226,7 @@ Contains 1245 measurements between 1905 - 1920 and information about the
 following high latitude eruptions: Ksudach in 1907-03-28, Novarupta in
 1912-06-06 and Katla in 1918-10-12.
 
-```{r open_mt.wilson}
+```{r open_mt.wilson, eval=FALSE}
 file.edit('../vignettes/Analyses/Mt.Wilson.Rmd')
 ```
 
@@ -234,7 +235,7 @@ file.edit('../vignettes/Analyses/Mt.Wilson.Rmd')
 Contains 58 measurements between 1917 - 1918 and information about the high
 latitude eruption of Katla in 1918-10-12.
 
-```{r open_hump_mountain}
+```{r open_hump_mountain, eval=FALSE}
 file.edit('../vignettes/Analyses/Hump_Mountain.Rmd')
 ```
 
@@ -243,7 +244,7 @@ file.edit('../vignettes/Analyses/Hump_Mountain.Rmd')
 Contains 226 measurements between 1920 - 1925 and information about the
 high latitude eruption of Katla in 1918-10-12.
 
-```{r open_calama}
+```{r open_calama, eval=FALSE}
 file.edit('../vignettes/Analyses/Calama.Rmd')
 ```
 
@@ -252,7 +253,7 @@ file.edit('../vignettes/Analyses/Calama.Rmd')
 Contains 226 measurements between 1920 - 1925 and information about the
 high latitude eruption of Raikoke in 1924-02-15.
 
-```{r open_haraqua_hala}
+```{r open_haraqua_hala, eval=FALSE}
 file.edit('../vignettes/Analyses/Haraqua_Hala.Rmd')
 ```
 
@@ -261,7 +262,7 @@ file.edit('../vignettes/Analyses/Haraqua_Hala.Rmd')
 Contains 462 measurements between 1920 - 1930 and information about the
 high latitude eruption of Raikoke in 1924-02-15.
 
-```{r open_montezuma}
+```{r open_montezuma, eval=FALSE}
 file.edit('../vignettes/Analyses/Montezuma.Rmd')
 ```
 
@@ -270,7 +271,7 @@ file.edit('../vignettes/Analyses/Montezuma.Rmd')
 Contains 445 measurements between 1925 - 1930 and information about the
 high latitude eruption of Raikoke in 1924-02-15.
 
-```{r open_table_mountain}
+```{r open_table_mountain, eval=FALSE}
 file.edit('../vignettes/Analyses/Table_Mountain.Rmd')
 ```
 
@@ -279,6 +280,6 @@ file.edit('../vignettes/Analyses/Table_Mountain.Rmd')
 Contains 203 measurements between 1926 - 1930 and information about the
 high latitude eruption of Raikoke in 1924-02-15.
 
-```{r open_Mt.Brukkaros}
+```{r open_Mt.Brukkaros, eval=FALSE}
 file.edit('../vignettes/Analyses/Mt_Brukkaros.Rmd')
 ```

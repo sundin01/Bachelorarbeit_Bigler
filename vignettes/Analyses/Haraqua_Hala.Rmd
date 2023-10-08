@@ -27,6 +27,7 @@ conflicts_prefer(dplyr::mutate)
 conflicts_prefer(lubridate::stamp)
 conflicts_prefer(recipes::fixed)
 conflicts_prefer(yardstick::rmse)
+conflicts_prefer(ggplot2::vars)
 ```
 
 ## Read data
@@ -120,8 +121,8 @@ transmission <- Haraqua_Hala_long|>
                                   quantile(., probs = .25, na.rm = TRUE),
                                   quantile(., probs = .75, na.rm = TRUE),
                                   IQR(.,na.rm = TRUE)))|>
-  dplyr::filter(variable == 'trans_400' | variable == 'trans_450' | variable == 'trans_500' 
-                | variable == 'trans_700' | variable == 'trans_1600')
+  dplyr::filter(variable == 'trans_350' | variable == 'trans_398' | variable == 'trans_452' 
+                | variable == 'trans_626' |variable == 'trans_724'| variable == 'trans_1600')
 ################################################################################
 trans_annual_mean <- Haraqua_Hala_long|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
@@ -140,6 +141,10 @@ Haraqua_Hala_od <- Haraqua_Hala_long|>
 ################################################################################
 optical_depth <- Haraqua_Hala_od|>
     dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    dplyr::filter(Date < as_date('1924-01-01')) |>
+    dplyr::filter(lubridate::month(Date) == 5| lubridate::month(Date) == 6| lubridate::month(Date) == 7| 
+                lubridate::month(Date) == 8 | lubridate::month(Date) == 9 |lubridate::month(Date) == 10 |
+                  lubridate::month(Date) == 11) |>
     group_by(month,variable)|>  
     summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
                                   median(., na.rm = TRUE),
@@ -148,8 +153,8 @@ optical_depth <- Haraqua_Hala_od|>
                                   quantile(., probs = .25, na.rm = TRUE),
                                   quantile(., probs = .75, na.rm = TRUE),
                                   IQR(.,na.rm = TRUE)))|>
-  dplyr::filter(variable == 'trans_400' | variable == 'trans_450' | variable == 'trans_500'
-                | variable == 'trans_700' | variable == 'trans_1600')
+  dplyr::filter(variable == 'trans_350' | variable == 'trans_398' | variable == 'trans_452' 
+                | variable == 'trans_626' |variable == 'trans_724'| variable == 'trans_1600')
 ################################################################################
 od_annual_mean <- Haraqua_Hala_od|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
@@ -234,7 +239,8 @@ Haraqua_Hala.1920.1925.trans <- Haraqua_Hala_long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350','398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.1920.1925.trans
 
@@ -259,7 +265,8 @@ ggplot()+
                                  '817','994', '1225', '1600')) +
   scale_y_continuous(limits = c(0.2, 1)) +  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Haraqua_Hala.1924.trans
 ```
@@ -279,7 +286,8 @@ ggplot()+
                                  '817','994', '1225', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.boxplot
 ```
@@ -295,10 +303,11 @@ transmission_overview <- transmission|>
   guides(color = guide_legend(title = "Wavelength [nm]")) +
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3, alpha = 1)), 
-  label = c('350','398' ,'452', '626','1600')) +
-  labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric transmission [ ]') +
+  label = c('350','398' ,'452', '626','724' ,'1600')) +
+  labs(x = 'Time [month]', y = 'Monthly aggregated transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 transmission_overview
 ```
@@ -326,7 +335,8 @@ annual_transmission <- trans_annual_mean|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 annual_transmission
 ```
@@ -359,7 +369,8 @@ Haraqua_Hala.1920.1925.od <- Haraqua_Hala_long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  +
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.1920.1925.od
 
@@ -383,7 +394,8 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))    
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.1924.od 
 ```
@@ -404,7 +416,8 @@ ggplot()+
                                  '817','994', '1225', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Atmospheric optical depth [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.boxplot.od
 ```
@@ -420,10 +433,12 @@ optical_depth_overview <- optical_depth|>
   guides(color = guide_legend(title = "Wavelength [nm]")) +
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3, alpha = 1)), 
-  label = c('350','452', '626','1600')) +
-  labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric optical depth [ ]') +
+  label = c('350','398' ,'452', '626','724' ,'1600')) +
+  labs(x = 'Time [month]', y = 'Monthly aggregated optical depth [ ]') +
+  scale_y_continuous(limits = c(0, 1)) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 optical_depth_overview
 ```
@@ -451,7 +466,8 @@ annual_od <- od_annual_mean|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 annual_od
 ```
@@ -483,7 +499,8 @@ Haraqua_Hala.alpha.1920.1925 <- Haraqua_Hala.alpha.long|>
                                  '817', '1225', '1600')) +
   scale_y_continuous(limits = c(-.01, .2)) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.alpha.1920.1925
 
@@ -509,7 +526,8 @@ ggplot()+
                                  '817', '1225', '1600')) +
   scale_y_continuous(limits = c(-.01, .2)) +  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.1924.alpha
 ```
@@ -529,7 +547,8 @@ ggplot()+
                                  '817', '1225', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Ångström parameter [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 Haraqua_Hala.boxplot.alpha
 ```
@@ -556,7 +575,8 @@ angstrom_overview <- Haraqua_Hala.alpha.long|>
                                  '817', '1225', '1600')) +  
   scale_y_continuous(limits = c(-.005, .2))+  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))    
 
 angstrom_overview
 ```
@@ -584,7 +604,9 @@ annual_alpha <- alpha_annual_mean|>
                        label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817', '1225', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))     
+
 
 annual_alpha
 ```

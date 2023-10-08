@@ -110,7 +110,7 @@ Washington_long <- Washington|>
 transmission <- Washington_long|>
     dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
     group_by(month,variable)|>  
-    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+    summarize_at(ggplot2::vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
                                   median(., na.rm = TRUE),
                                   mean(., na.rm = TRUE),
                                   sd(., na.rm = TRUE),
@@ -127,7 +127,7 @@ trans_annual_mean <- Washington_long|>
                            "trans_600", "trans_700", "trans_800", "trans_900",
                            "trans_1000", "trans_1200", "trans_1600")))|> 
     group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+    summarise_at(ggplot2::vars(values), funs(mean(., na.rm = TRUE)))
 ################################################################################
 # Optical Depth
 ################################################################################
@@ -136,8 +136,13 @@ Washington_od <- Washington_long|>
 ################################################################################
 optical_depth <- Washington_od|>
     dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    dplyr::filter(Date > as_date('1905-01-01')) |>
+    dplyr::filter(lubridate::month(Date) == 5| lubridate::month(Date) == 6| 
+                    lubridate::month(Date) == 7|  lubridate::month(Date) == 8 | 
+                    lubridate::month(Date) == 9 |lubridate::month(Date) == 10 |
+                  lubridate::month(Date) == 11) |>  
     group_by(month,variable)|>  
-    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+    summarize_at(ggplot2::vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
                                   median(., na.rm = TRUE),
                                   mean(., na.rm = TRUE),
                                   sd(., na.rm = TRUE),
@@ -155,7 +160,7 @@ od_annual_mean <- Washington_od|>
                            "trans_600", "trans_700", "trans_800", "trans_900",
                            "trans_1000", "trans_1200", "trans_1600")))|> 
     group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+    summarise_at(ggplot2::vars(values), funs(mean(., na.rm = TRUE)))
 
 write_csv(od_annual_mean, '../../data/od_Timeline/Washington.od.csv')
 ################################################################################
@@ -188,9 +193,67 @@ alpha_annual_mean <- Washington.alpha.long|>
                            "alpha_600", "alpha_700", "alpha_800", "alpha_900",
                            "alpha_1200", "alpha_1600")))|> 
     group_by(variable, month = lubridate::floor_date(Date, 'year'))|>
-    summarise_at(vars(values), funs(mean(., na.rm = TRUE)))
+    summarise_at(ggplot2::vars(values), funs(mean(., na.rm = TRUE)))
 
 write_csv(alpha_annual_mean, '../../data/alpha_timeline/Washington.alpha.csv')
+```
+
+## Tables
+
+```{r eval=FALSE}
+kable(Washington, align = c('l', rep('c', times = 23)))|>
+  kable_styling()
+```
+
+### Transmissison
+
+```{r eval=FALSE}
+kable(Washington_long, align = 'lccc')|>
+  kable_styling()
+```
+
+```{r eval=FALSE}
+kable(transmission, align = c('l', rep('c', times = 9)))|>
+  kable_styling()   
+```
+
+```{r eval=FALSE}
+kable(trans_annual_mean, align = 'lcc')|>
+  kable_styling()
+```
+
+### Optical Depth
+
+```{r eval=FALSE}
+kable(Washington_od , align = c('l', rep('c', times = 11)))|>
+  kable_styling()
+```
+
+```{r eval=FALSE}
+kable(optical_depth, align = c('l', rep('c', times = 9)))|>
+  kable_styling()
+```
+
+```{r eval=FALSE}
+kable(trans_annual_mean, align = 'lcc')|>
+  kable_styling()
+```
+
+### Ångström Parameter
+
+```{r eval=FALSE}
+kable(Washington.alpha, align = c('l', rep('c', times = 11)))|>
+  kable_styling()
+```
+
+```{r eval=FALSE}
+kable(Washinggton.alpha.long, align = 'lccc')|>
+  kable_styling()
+```
+
+```{r eval=FALSE}
+kable(alpha_annual_mean, align = 'lcc')|>
+  kable_styling()
 ```
 
 # Graphs
@@ -216,19 +279,22 @@ Washington.1902.1907.trans <- Washington_long|>
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.01, fill = "lightskyblue1", linewidth = 0.2) + 
   annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
-  y = 0, label= "Santa Maria [WDC06A]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +    
+  y = 0, label= "Santa Maria [WDC06A]", hjust = 0, vjust = -0.2, 
+  angle = 90, alpha = 0.5, size = 4) +    
   geom_point(aes(x = Date, y = values, color = variable), alpha = 0.2) +
   geom_smooth(aes(x = Date, y = values, color = variable), se = FALSE) +
   geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
   annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = 0, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, angle = 90, alpha = .5) + 
+  y = 0, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2,
+  angle = 90, alpha = .5, size = 4) + 
   labs(x = 'Time [year]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))
 
 Washington.1902.1907.trans
 
@@ -247,14 +313,16 @@ ggplot()+
   geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
   # Adapt labels
   annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = 0.2, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, angle = 90, alpha = .5) +
+  y = 0.2, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, 
+  angle = 90, alpha = .5) +
   labs(x = 'Time [month]', y = 'Transmission [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.1903.trans
 ```
@@ -265,16 +333,6 @@ Here, you find a box-whiskers plot. Note that due to the Santa Maria
 eruption in 1902 only data which are newer than 1905-01-01 are considered.
 
 ```{r Transmission_boxplot, message=FALSE, warning=FALSE, error=FALSE}
-#function for theoretical calculation
-source('../../R/General/theoretical_transmission.R')
-# Create a sequenze with wavelenth between 0.1nm and 1.6nm
-wavelenghts <- c(0.4, .45, .5, .6, .7, .8, .9, 1, 1.2, 1.6)
-# Create a sequenze with wavelengths and zenith angle
-values <- transmittance(wavelenghts)
-# Put all values in a tibble
-theoretical.values <- tibble("lambda" = seq(from = 1, to = 10, by = 1),
-                             'normal_irradiation' = values)
-
 
 Washington.boxplot <- Washington_long|>
     dplyr::filter((Date > as_date('1905-01-01'))) |>
@@ -284,13 +342,12 @@ ggplot()+
   stat_boxplot(aes(x = variable, y = values),
   geom='errorbar', linetype = 1, width = 0.5) +
   geom_jitter(aes(x = variable, y = values), size = .5, width = 0.1, alpha = .2) +
-  geom_smooth(data = theoretical.values, aes(x = lambda, y = normal_irradiation), se = FALSE,
-              linewidth = 0.5) +  
   scale_x_discrete(labels = c('400', '450', '500', '600', '700', '800', 
                               '900','1000', '1200', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.boxplot
 ```
@@ -312,7 +369,8 @@ transmission_overview <- transmission|>
   guide = guide_legend(override.aes = list(size = 3, alpha = 1))) +
   labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 transmission_overview
 ```
@@ -341,7 +399,8 @@ annual_transmission <- trans_annual_mean|>
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_transmission
 ```
@@ -374,7 +433,8 @@ Washington.1902.1907.od <- Washington_long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))
 
 Washington.1902.1907.od
 
@@ -398,7 +458,8 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))    
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))  
 
 Washington.1903.od
 
@@ -422,7 +483,8 @@ ggplot()+
                               '900','1000', '1200', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Atmospheric optical depth [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.boxplot.od
 ```
@@ -441,10 +503,13 @@ optical_depth_overview <- optical_depth|>
   geom_errorbar(aes(x = month, ymin = mean - sd, ymax = mean + sd), width = .1) +
   guides(color = guide_legend(title = "Wavelength [nm]")) +
   scale_color_viridis_d(option = "viridis",
-  guide = guide_legend(override.aes = list(size = 3, alpha = 1))) +
-  labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric optical depth [ ]') +
+  guide = guide_legend(override.aes = list(size = 3, alpha = 1)),
+                       label = c('400' ,'450', '600','700' ,'1600')) +
+  labs(x = 'Time [month]', y = 'Monthly aggregated optical depth [ ]') +
+  scale_y_continuous(limits = c(0,1))+
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 optical_depth_overview
 ```
@@ -471,7 +536,8 @@ annual_od <- od_annual_mean|>
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_od
 ```
@@ -503,7 +569,8 @@ Washington.alpha.1902.1907 <- Washington.alpha.long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.alpha.1902.1907
 
@@ -527,7 +594,8 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.1903.alpha
 ```
@@ -547,7 +615,8 @@ ggplot()+
                               '900','1000', '1200', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Ångström parameter [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Washington.boxplot.alpha
 ```
@@ -571,7 +640,8 @@ angstrom_overview <- Washington.alpha.long|>
                                                      '600','700','800','900','1200','1600')) +  
   scale_y_continuous(limits = c(0.05, .2))+  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 angstrom_overview
 ```
@@ -597,7 +667,8 @@ annual_alpha <- alpha_annual_mean|>
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3, alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_alpha
 ```

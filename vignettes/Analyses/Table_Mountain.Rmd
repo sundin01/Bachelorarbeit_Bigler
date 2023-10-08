@@ -142,6 +142,7 @@ Table_Mountain_od <- Table_Mountain_long|>
 ################################################################################
 optical_depth <- Table_Mountain_od|>
     dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    dplyr::filter()
     group_by(month,variable)|>  
     summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
                                   median(., na.rm = TRUE),

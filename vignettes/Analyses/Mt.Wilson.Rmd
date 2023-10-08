@@ -209,7 +209,7 @@ optical_depth <- Mt.Wilson_od|>
                   variable == 'trans_600' | variable == 'trans_700' 
                 | variable == 'trans_1600')
 ################################################################################
-od_annual_mean <- Mt.Wilson_long|>
+od_annual_mean <- Mt.Wilson_od|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
    dplyr::mutate(variable = factor(variable,
                 levels = c("trans_350", "trans_400", "trans_450", "trans_500", 
@@ -364,7 +364,8 @@ Mt.Wilson.1905.1920.trans <- Mt.Wilson_long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))
 
 ################################################################################
 # Zoom in (year 1908)
@@ -385,7 +386,8 @@ ggplot()+
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0.2, 1)) +  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 
 ################################################################################
@@ -411,7 +413,8 @@ ggplot()+
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0.2, 1)) +  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 ################################################################################
 # Zoom in (year 1919)
@@ -432,7 +435,8 @@ ggplot()+
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0.2, 1)) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.1905.1920.trans
 
@@ -470,7 +474,8 @@ ggplot()+
                               900,1000, 1200, 1600)) +
   labs(x = 'Wavelength [nm]', y = 'Transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.boxplot
 
@@ -502,14 +507,18 @@ transmission_overview <- transmission|>
   geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
   geom_errorbar(aes(x = month, ymin = mean - sd, ymax = mean + sd), width = .1) +
   guides(color = guide_legend(title = "Wavelength [nm]")) +
-  scale_color_viridis_d(option = "viridis",
-  guide = guide_legend(override.aes = list(size = 3, alpha = 1), 
-                       label = c('350', '400', '450', '600', '700', '1600'))) +
-  labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric transmission [ ]') +
+  scale_color_viridis_d(option = "varidis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '600',
+                                                    '700', '1600') ) +
+  labs(x = 'Time [month]', y = 'Monthly aggregated transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 transmission_overview
+
+
 ```
 
 ### Annual mean of the atmospheric transmission
@@ -547,13 +556,14 @@ annual_transmission <- trans_annual_mean|>
   y = 0, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
   y = 0, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +
+  labs(x = 'Time [year]', y = 'Annual mean of the transmission [ ]') +
   scale_y_continuous(limits = c(0, 1))+
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_transmission
 ```
@@ -605,14 +615,15 @@ Mt.Wilson.1905.1920.od <- Mt.Wilson_long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 ################################################################################
 # Zoom in (year 1908)
 Mt.Wilson.1908.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1907-01-01') & Date < as_date('1908-12-31')) |>
+  dplyr::filter(Date > as_date('1907-05-01') & Date < as_date('1908-12-31')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -628,14 +639,15 @@ ggplot()+
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0, 1.2)) +  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) 
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))  
 
 ################################################################################
 # Zoom in (year 1912)
 Mt.Wilson.1912.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1912-01-01') & Date < as_date('1912-12-31')) |>
+  dplyr::filter(Date > as_date('1912-05-01') & Date < as_date('1912-12-31')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -651,14 +663,15 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))  +
+  theme(text = element_text(size = 20))  
 
 ################################################################################
 # Zoom in (year 1919)
 Mt.Wilson.1919.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1919-01-01') & Date < as_date('1919-12-31')) |>
+  dplyr::filter(Date > as_date('1919-05-01') & Date < as_date('1919-12-31')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -671,7 +684,8 @@ ggplot()+
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0, 1.2)) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) 
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.1905.1920.od
 
@@ -700,7 +714,8 @@ ggplot()+
                               '900','1000', '1200', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Atmospheric optical depth [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.boxplot.od
 ```
@@ -713,12 +728,15 @@ optical_depth_overview <- optical_depth|>
   geom_point(aes(x = month, y = mean, color = variable)) +
   geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
   geom_errorbar(aes(x = month, ymin = mean - sd, ymax = mean + sd), width = .1) +
-  guides(color = guide_legend(title = "Wavelength [nm]")) +
-  scale_color_viridis_d(option = "viridis",
-  guide = guide_legend(override.aes = list(size = 3, alpha = 1))) +
-  labs(x = 'Time [month]', y = 'Monthly aggregated atmospheric optical depth [ ]') +
+   scale_color_viridis_d(option = "varidis",
+  guide = guide_legend(override.aes = list(size = 3,
+  alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '600',
+                                                    '700', '1600') ) +
+  labs(x = 'Time [month]', y = 'Monthly aggregated optical depth [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  scale_y_continuous(limits = c(0,1))+
+  theme(text = element_text(size = 20))  
 
 optical_depth_overview
 ```
@@ -758,13 +776,14 @@ annual_od <- od_annual_mean|>
   y = 1.2, label= "Ksudach [1907-03-28]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
   y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric optical depth [ ]') +
+  labs(x = 'Time [year]', y = 'Annual mean of the optical depth [ ]') +
   scale_y_continuous(limits = c(0, 1.2))+
   scale_color_viridis_d(option = "viridis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_od
 ```
@@ -815,7 +834,8 @@ Mt.Wilson.alpha.1905.1920 <- Mt.Wilson.alpha.long|>
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.alpha.1905.1920
 
@@ -841,7 +861,8 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('350','400','450','500',
                                                      '600','700','800','1200','1600')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 
 Mt.Wilson.1912.alpha
@@ -864,7 +885,8 @@ ggplot()+
                               '900','1000', '1200', '1600')) +
   labs(x = 'Wavelength [nm]', y = 'Ångström parameter [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 Mt.Wilson.boxplot.alpha
 ```
@@ -889,7 +911,8 @@ angstrom_overview.1908 <- Mt.Wilson.alpha.long|>
                                                      '600','700','800','1200','1600')) +
   scale_y_continuous(limits = c(-.005, .2))+  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 angstrom_overview.1912 <- Mt.Wilson.alpha.long|>
   dplyr::filter(Date > as_date('1912-05-01') & Date < as_date('1913-01-01'))|>
@@ -910,7 +933,8 @@ angstrom_overview.1912 <- Mt.Wilson.alpha.long|>
                                                      '600','700','800','1200','1600')) +
   scale_y_continuous(limits = c(-.005, .2))+  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 angstrom_overview.1919 <- Mt.Wilson.alpha.long|>
   dplyr::filter(Date > as_date('1919-01-01') & Date < as_date('1919-12-31')) |>
@@ -928,7 +952,8 @@ angstrom_overview.1919 <- Mt.Wilson.alpha.long|>
                                                      '600','700','800','1200','1600')) +
   scale_y_continuous(limits = c(-.005, .2))+  
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 angstrom_overview.1908 
 
@@ -977,7 +1002,8 @@ annual_alpha <- alpha_annual_mean|>
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]")) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
 
 annual_alpha
 ```

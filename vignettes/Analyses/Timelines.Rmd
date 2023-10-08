@@ -86,7 +86,7 @@ dplyr::rename(c('lambda_2' = 'lambda1...m.', 'lambda_3' = 'lambda2...m.',
                 'trans_8' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>
   dplyr::select(selections) |>
   dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
   
@@ -118,7 +118,7 @@ dplyr::rename(c('lambda_1' = 'lambda_350', 'lambda_2' = 'lambda_400',
                 'trans_6' = 'trans_700','trans_7' = 'trans_800',
                 'trans_8' = 'trans_900','trans_9' = 'trans_1000',
                 'trans_10' = 'trans_1200','trans_11' = 'trans_1600'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>  
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
   dplyr::select(selections) |>
   dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
   
@@ -151,7 +151,7 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_8' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>  
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>  
   dplyr::select(selections) |>
   dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
@@ -183,7 +183,7 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>   
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
   dplyr::select(selections) |>
   dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
@@ -215,7 +215,7 @@ dplyr::rename(c('lambda_1' = 'lambda1...m.', 'lambda_2' = 'lambda2...m.',
                 'trans_7' = 'transmission7....100.','trans_9' = 'transmission8....100.',
                 'trans_10' = 'transmission9....100.',
                 'trans_11' = 'transmission10....100.'))|>
-  dplyr::mutate(Date = lubridate::floor_date(Date, 'month'))|>   
+  dplyr::mutate(Date = lubridate::floor_date(Date, 'year'))|>   
   dplyr::select(selections) |>
   dplyr::mutate(across(2:23, ~ifelse(.x > 2, NA, .x)))
 
@@ -307,39 +307,42 @@ northern.timeline.trans <- ggplot()+
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
   annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
-  y = .2, label= "Santa Maria [WDC06A]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
+  y = .2, label= "Santa Maria [WDC06A]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +
   annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
-  y = .2, label= "Ksudach [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = .2, label= "Ksudach [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
-  y = .2, label= "Novarupta [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = .2, label= "Novarupta [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = .2, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .2, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
-  y = .2, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  y = .2, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
   geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
   geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
   annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = .2, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .2, label= "Santa Maria [1902-10-24]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = .2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +
+  y = .2, label= "Novarupta [1912-06-06]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +
   annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = .2, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = .2, label= "Ksudach [1907-03-28]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = .2, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .2, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
-  y = .2, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  y = .2, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the transmission [ ]') +  
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
                         title = "Wavelength [nm]"), 
                         label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
-                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '590 - 630', '700 - 725', '790 - 810','890 - 910', 
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))
+
+northern.timeline.trans 
 ```
 
 #### Extract Transmission Signal
@@ -495,39 +498,42 @@ northern.timeline.od <- ggplot()+
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
   annotate("text", x = as.Date("1904-04-20", format = '%Y-%m-%d'),
-  y = 1.2, label= "Santa Maria [WDC06A]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  y = 1.2, label= "Santa Maria [WDC06A]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +
   annotate("text", x = as.Date("1909-08-09", format = '%Y-%m-%d'),
-  y = 1.2, label= "Ksudach [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = 1.2, label= "Ksudach [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1914-06-04", format = '%Y-%m-%d'),
-  y = 1.2, label= "Novarupta [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = 1.2, label= "Novarupta [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
-  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
   geom_vline(xintercept = as.numeric(as.Date("1912-06-06")), linetype = 'dotted') +
   geom_vline(xintercept = as.numeric(as.Date("1907-03-28")), linetype = 'dotted') +  
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
   annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = 1.2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = 1.2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1912-06-06", format = '%Y-%m-%d'),
-  y = 1.2, label= "Novarupta [1912-06-06]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +
+  y = 1.2, label= "Novarupta [1912-06-06]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +
   annotate("text", x = as.Date("1907-03-28", format = '%Y-%m-%d'),
-  y = 1.2, label= "Ksudach [1907-03-28]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +  
+  y = 1.2, label= "Ksudach [1907-03-28]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +  
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
-  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric optical depth [ ]') +  
+  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the optical depth [ ]') +  
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
                         title = "Wavelength [nm]"), 
                         label = c('340 - 360' ,'390 - 410', '440 - 460', '490 - 510', 
-                                 '590 - 610', '700 - 725', '790 - 810','890 - 910', 
+                                 '595 - 625', '700 - 725', '790 - 810','890 - 910', 
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))  
+
+northern.timeline.od
 ```
 
 #### Extract Optical Depth Signal
@@ -690,7 +696,7 @@ northern.timeline.alpha <- ggplot()+
   y = .2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
   y = .2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric optical depth [ ]') +  
+  labs(x = 'Time [year]', y = 'Annual mean of the Ångström Parameter [ ]') +  
   scale_y_continuous(limits = c(-0.05,0.2)) +
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
@@ -700,6 +706,8 @@ northern.timeline.alpha <- ggplot()+
                                  '1190 - 1210', '1590 - 1610')) +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+
+northern.timeline.alpha
 ```
 
 #### Extract Ångström Signal
@@ -996,21 +1004,21 @@ southern.timeline.trans <- ggplot()+
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
   annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = .3, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .3, label= "Katla [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
-  y = .3, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  y = .3, label= "Raikoke [NEEM-S1]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
   geom_vline(xintercept = as.numeric(as.Date("1922-01-01")), 
              linetype = 'dotted', color = 'red')+
   annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
-  y = .3, label= "potential volcanic event", hjust = 0, vjust = -0.2, 
-  angle = 90, alpha = 0.5, color = 'red') +   
+  y = .3, label= "Potential Volcanic Event", hjust = 0, vjust = -0.2, 
+  angle = 90, alpha = 0.5, color = 'red', size = 4.5) +   
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = .3, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = .3, label= "Katla [1918-10-12]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
-  y = .3, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  y = .3, label= "Raikoke [1924-02-15]", hjust = 0, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the transmission [ ]') +  
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
                         title = "Wavelength [nm]"), 
@@ -1018,7 +1026,10 @@ southern.timeline.trans <- ggplot()+
                                  '590 - 610', '700 - 725', '790 - 810','890 - 910', 
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))  
+
+southern.timeline.trans 
 ```
 
 #### Statistics
@@ -1097,21 +1108,21 @@ southern.timeline.od <- ggplot()+
                 ymin = -Inf, ymax = Inf), 
           color = "lightskyblue1", alpha = 0.1, fill = "lightskyblue1", linewidth = 0.2) +  
   annotate("text", x = as.Date("1920-03-19", format = '%Y-%m-%d'),
-  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = 1.2, label= "Katla [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1925-05-26", format = '%Y-%m-%d'),
-  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) +   
+  y = 1.2, label= "Raikoke [NEEM-S1]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) +   
   geom_vline(xintercept = as.numeric(as.Date("1918-10-12")), linetype = 'dotted') + 
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
   geom_vline(xintercept = as.numeric(as.Date("1922-01-01")), 
              linetype = 'dotted', color = 'red')+
   annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
-  y = 1.2, label= "potential volcanic event", hjust = 1, vjust = -0.2, 
-  angle = 90, alpha = 0.5, color = 'red') +     
+  y = 1.2, label= "Potential Volcanic Event", hjust = 1, vjust = -0.2, 
+  angle = 90, alpha = 0.5, color = 'red', size = 4.5) +     
   annotate("text", x = as.Date("1918-10-12", format = '%Y-%m-%d'),
-  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
+  y = 1.2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
-  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') +  
+  y = 1.2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5, size = 4.5) + 
+  labs(x = 'Time [year]', y = 'Annual mean of the optical depth [ ]') +  
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
                         title = "Wavelength [nm]"), 
@@ -1119,7 +1130,10 @@ southern.timeline.od <- ggplot()+
                                  '590 - 610', '700 - 725', '790 - 810','890 - 910', 
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))
+
+southern.timeline.od
 ```
 
 #### Statistics
@@ -1192,7 +1206,7 @@ southern.timeline.alpha <- ggplot()+
   y = .2, label= "Katla [1918-10-12]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
   annotate("text", x = as.Date("1924-02-15", format = '%Y-%m-%d'),
   y = .2, label= "Raikoke [1924-02-15]", hjust = 1, vjust = -0.2, angle = 90, alpha = 0.5) + 
-  labs(x = 'Time [year]', y = 'Annual mean of the atmospheric transmission [ ]') + 
+  labs(x = 'Time [year]', y = 'Annual mean of the Ångström Parameter [ ]') + 
   scale_y_continuous(limits = c(-0.05,0.2)) +    
   scale_color_viridis_d(option = "viridis", 
                         guide = guide_legend(override.aes = list(size = 3,alpha = 1),
@@ -1201,7 +1215,8 @@ southern.timeline.alpha <- ggplot()+
                                  '590 - 610', '700 - 725', '790 - 810','890 - 910', 
                                  '990 -1010', '1190 - 1210', '1590 - 1610')) +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
+  theme(text = element_text(size = 20))  
 ```
 
 # PDFs
