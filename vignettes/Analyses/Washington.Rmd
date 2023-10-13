@@ -13,6 +13,24 @@ editor_options:
     wrap: 75
 ---
 
++----------------+--------------------------------------------------------+
+| **Project:**   | **Bachelor thesis**                                    |
++================+========================================================+
+| **Title:**     | **Extracting Signals of Volcanic Events from           |
+|                | Transmission data measured by**                        |
+|                |                                                        |
+|                | **the Smithsonian Institution between 1902 and 1930**  |
++----------------+--------------------------------------------------------+
+| **Author:**    | **Patrick Bigler                                       |
+|                | (patrick.bigler1\@stundents.unibe.ch**                 |
++----------------+--------------------------------------------------------+
+| *              | **Prof. Dr. Stefan Brönnimann                          |
+| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
++----------------+--------------------------------------------------------+
+| **             | **University of Bern, Institute of Geography, Unit     |
+| Institution:** | Climatology**                                          |
++----------------+--------------------------------------------------------+
+
 # Introduction
 
 ## Read packages
@@ -57,9 +75,7 @@ write_csv(Washington.1902.1907, '../../data/trans_Timeline/Washington.ok.csv')
 
 ## Slice and rebuild
 
-Because there are shifts in the data sets, we must slice the table into
-sub-tables. After that, we can correct the shift and build it all back
-together. Simultaneously, we change the column names.
+We change the column names:
 
 ```{r Preparation_Washington, message=FALSE, error=FALSE, warning=FALSE}
 Washington <- Washington.1902.1907|>
@@ -84,6 +100,14 @@ Washington <- Washington.1902.1907|>
 -   Set levels
 
 -   Substitute strange values with NA
+
+    -   Strange values: If a value greater than 2, then we substitute it
+        with NA (wavelenght is between 0.3-1.6 and transmission between 0
+        and 1) If there something like 2, then it must be an error.
+
+-   Calculate optical depth
+
+-   Calculate the Ångström Parameter
 
 ```{r create_tables, message=FALSE, error=FALSE, warning=FALSE}
 # We make some quality control. If a value bigger than 2, the it is a error (because the transmission is a values between 0 and 1 and the wavelength is between 0 and 1.6). Further, in the 1000nm wavelenght are most likely tipos. It seems quite impossible that there is such a outlier. Therefore, we filter these rows out. 
@@ -200,6 +224,8 @@ write_csv(alpha_annual_mean, '../../data/alpha_timeline/Washington.alpha.csv')
 
 ## Tables
 
+We show our tables in a proper way. That is why we use kable()
+
 ```{r eval=FALSE}
 kable(Washington, align = c('l', rep('c', times = 23)))|>
   kable_styling()
@@ -257,6 +283,8 @@ kable(alpha_annual_mean, align = 'lcc')|>
 ```
 
 # Graphs
+
+Now we plot our Graphs:
 
 ## Transmission
 
@@ -674,6 +702,9 @@ annual_alpha
 ```
 
 # PDFs
+
+The output of our plots should be in a pdf format because it is easier to
+handle in latex.
 
 ## Transmission
 

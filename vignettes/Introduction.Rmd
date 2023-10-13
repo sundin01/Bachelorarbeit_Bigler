@@ -13,16 +13,33 @@ editor_options:
     wrap: 75
 ---
 
++---------------+-------------------------------------------------------------+
+| **Project:**  | **Bachelor thesis**                                         |
++===============+=============================================================+
+| **Title:**    | **Extracting Signals of Volcanic Events from Transmission   |
+|               | data measured by**                                          |
+|               |                                                             |
+|               | **the Smithsonian Institution between 1902 and 1930**       |
++---------------+-------------------------------------------------------------+
+| **Author:**   | **Patrick Bigler (patrick.bigler1\@stundents.unibe.ch**     |
++---------------+-------------------------------------------------------------+
+| **            | **Prof. Dr. Stefan Brönnimann                               |
+| Supervisor:** | (stefan.brönnimann\@unibe.ch)**                             |
++---------------+-------------------------------------------------------------+
+| **I           | **University of Bern, Institute of Geography, Unit          |
+| nstitution:** | Climatology**                                               |
++---------------+-------------------------------------------------------------+
+
 # Introduction
 
-Welcome to the introduction in the Bachelor-thesis of Patrick Bigler. Here,
+Welcome to the introduction in the Bachelor thesis of Patrick Bigler. Here,
 you can find all data sets which were used in this thesis. You can navigate
-through all locations and redo all analysis.
+through all locations and reproduce all analysis.
 
 ## Read packages
 
 This code chunk loads all packages you need. If you have not installed any
-package, it will install it by itself.
+package, it will install it automatically.
 
 ```{r Package, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/General/packages.R")
@@ -32,10 +49,10 @@ conflicts_prefer(ggplot2::annotate)
 
 ## Read files
 
-Here, we read all digitized data sets from the ERACLIM project. For a
+Here, we read all digitized data sets (part of the ERACLIM project). For a
 comprehensive analysis, it is important to have enough data. Therefore,
 only data sets containing more than 50 measurements are used. The following
-data sets were not considered in the analyisis:
+data sets were not considered in the analysis:
 
 -   Bassour (only 13 measurements)
 
@@ -43,7 +60,7 @@ data sets were not considered in the analyisis:
 
 -   Mt.Wilson (only 5 Measurements)
 
--   Mt. Wilson (only 20Measurements)
+-   Mt. Wilson (only 20 Measurements)
 
 -   Mt. Wilson (only 18 Measurements)
 
@@ -66,17 +83,14 @@ Calama.1918.1920 <- read.delim("../Data/Calama.txt")
 Mt.Brukkaros.1926.1930 <- read.delim("../Data/Mt_Brukkaros.txt")
 
 Table.mountain.1925.1930 <- read.delim("../Data/Table_mountain.txt")
-
-################################## data not in use ##################################
-Bassour.1911.1912 <- read.delim("../data/Bassour.txt")
-
-Mt.Whitney.1909.1910 <- read.delim("../data/Mounth_Whitney.txt")
 ```
 
 ## Coordinates-Transformation
 
-Here, we transform coordinates in the WGS84 system, because it is easier to
-handle. For that, we wrote a function on a R-script.
+Here, we transform coordinates within the WGS84 system from minutes and
+seconds to decimal system, because it is easier to handle. For that, we
+wrote a function on a R-script. We load this function and apply it on all
+reference volcanoes and measurement locations
 
 ```{r coordinates_transformation, message=FALSE, error=FALSE, warning=FALSE}
 source("../R/function.coordinate.transformation.R")
@@ -164,7 +178,7 @@ c(rep("Ice core",2) ,rep("Volcano",5), rep("Measurement station", 8)))
 ### Mapping all locations
 
 Here, we use GGPLOT to create a map with all measurements stations or
-locations of the volcaenos or drill hole for the ice cores:
+locations of the volcanoes or drill hole for the ice cores:
 
 ```{r mapping_locations, message=FALSE, error=FALSE, warning=FALSE}
 #read the world map
@@ -216,7 +230,7 @@ volcanic events.
 Contains 44 measurements between 1902 - 1907 and information about the
 tropical eruption of Santa Maria in 1902-10-24.
 
-```{r open_washington, eval=FALSE}
+```{r open washington, eval=FALSE, message=FALSE, warning=FALSE}
 file.edit('../vignettes/Analyses/Washington.Rmd')
 ```
 

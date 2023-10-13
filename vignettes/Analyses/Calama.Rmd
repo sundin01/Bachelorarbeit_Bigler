@@ -13,6 +13,24 @@ editor_options:
     wrap: 75
 ---
 
++----------------+--------------------------------------------------------+
+| **Project:**   | **Bachelor thesis**                                    |
++================+========================================================+
+| **Title:**     | **Extracting Signals of Volcanic Events from           |
+|                | Transmission data measured by**                        |
+|                |                                                        |
+|                | **the Smithsonian Institution between 1902 and 1930**  |
++----------------+--------------------------------------------------------+
+| **Author:**    | **Patrick Bigler                                       |
+|                | (patrick.bigler1\@stundents.unibe.ch**                 |
++----------------+--------------------------------------------------------+
+| *              | **Prof. Dr. Stefan Brönnimann                          |
+| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
++----------------+--------------------------------------------------------+
+| **             | **University of Bern, Institute of Geography, Unit     |
+| Institution:** | Climatology**                                          |
++----------------+--------------------------------------------------------+
+
 # Introduction
 
 ## Read packages

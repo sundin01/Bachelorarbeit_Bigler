@@ -13,6 +13,24 @@ editor_options:
     wrap: 75
 ---
 
++----------------+--------------------------------------------------------+
+| **Project:**   | **Bachelor thesis**                                    |
++================+========================================================+
+| **Title:**     | **Extracting Signals of Volcanic Events from           |
+|                | Transmission data measured by**                        |
+|                |                                                        |
+|                | **the Smithsonian Institution between 1902 and 1930**  |
++----------------+--------------------------------------------------------+
+| **Author:**    | **Patrick Bigler                                       |
+|                | (patrick.bigler1\@stundents.unibe.ch**                 |
++----------------+--------------------------------------------------------+
+| *              | **Prof. Dr. Stefan Brönnimann                          |
+| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
++----------------+--------------------------------------------------------+
+| **             | **University of Bern, Institute of Geography, Unit     |
+| Institution:** | Climatology**                                          |
++----------------+--------------------------------------------------------+
+
 # Introduction
 
 ## Read packages
@@ -1115,6 +1133,9 @@ southern.timeline.od <- ggplot()+
   geom_vline(xintercept = as.numeric(as.Date("1924-02-15")), linetype = 'dotted') +  
   geom_vline(xintercept = as.numeric(as.Date("1922-01-01")), 
              linetype = 'dotted', color = 'red')+
+  annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
+  y = 0.5, label= "+3.3% to +58%", hjust = 0.5, vjust = +0.2, 
+  angle = 0, alpha = 0.5, color = 'red', size = 4.5) +      
   annotate("text", x = as.Date("1922-01-01", format = '%Y-%m-%d'),
   y = 1.2, label= "Potential Volcanic Event", hjust = 1, vjust = -0.2, 
   angle = 90, alpha = 0.5, color = 'red', size = 4.5) +     

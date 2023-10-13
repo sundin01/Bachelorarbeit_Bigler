@@ -13,6 +13,24 @@ editor_options:
     wrap: 75
 ---
 
++----------------+--------------------------------------------------------+
+| **Project:**   | **Bachelor thesis**                                    |
++================+========================================================+
+| **Title:**     | **Extracting Signals of Volcanic Events from           |
+|                | Transmission data measured by**                        |
+|                |                                                        |
+|                | **the Smithsonian Institution between 1902 and 1930**  |
++----------------+--------------------------------------------------------+
+| **Author:**    | **Patrick Bigler                                       |
+|                | (patrick.bigler1\@stundents.unibe.ch**                 |
++----------------+--------------------------------------------------------+
+| *              | **Prof. Dr. Stefan Brönnimann                          |
+| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
++----------------+--------------------------------------------------------+
+| **             | **University of Bern, Institute of Geography, Unit     |
+| Institution:** | Climatology**                                          |
++----------------+--------------------------------------------------------+
+
 # Introduction
 
 ## Read packages
@@ -117,6 +135,9 @@ Montezuma_long <- Montezuma|>
 ################################################################################
 transmission <- Montezuma_long|>
     dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    dplyr::filter(lubridate::month(Date) == 11| lubridate::month(Date) == 12| 
+                    lubridate::month(Date) == 1|  lubridate::month(Date) == 2 | 
+                    lubridate::month(Date) == 3) |>     
     group_by(month,variable)|>  
     summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
                                   median(., na.rm = TRUE),
@@ -291,13 +312,15 @@ transmission_overview <- transmission|>
   ggplot() +
   geom_point(aes(x = month, y = mean, color = variable)) +
   geom_line(aes(x = month, y = mean, color = variable, group = variable)) +
-  geom_errorbar(aes(x = month, ymin = mean - std, ymax = mean + std), width = .1) +
+  geom_errorbar(aes(x = month, ymin = mean - sd, ymax = mean + sd), width = .1) +
   guides(color = guide_legend(title = "Wavelength [nm]")) +
   scale_color_viridis_d(option = "viridis",
-  guide = guide_legend(override.aes = list(size = 3, alpha = 1))) +
-  labs(x = 'Time [months]', y = 'Monthly aggregated atmospheric transmission [ ]') +
+  guide = guide_legend(override.aes = list(size = 3, alpha = 1)), 
+  label = c('349', '395', '450', '621', '714', '1593' )) +
+  labs(x = 'Time [months]', y = 'Monthly aggregated transmission [ ]') +
   theme_light() +
-  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))
+  theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
+  theme(text = element_text(size = 20))   
 
 transmission_overview
 ```
