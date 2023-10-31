@@ -13,23 +13,24 @@ editor_options:
     wrap: 75
 ---
 
-+----------------+--------------------------------------------------------+
-| **Project:**   | **Bachelor thesis**                                    |
-+================+========================================================+
-| **Title:**     | **Extracting Signals of Volcanic Events from           |
-|                | Transmission data measured by**                        |
-|                |                                                        |
-|                | **the Smithsonian Institution between 1902 and 1930**  |
-+----------------+--------------------------------------------------------+
-| **Author:**    | **Patrick Bigler                                       |
-|                | (patrick.bigler1\@stundents.unibe.ch**                 |
-+----------------+--------------------------------------------------------+
-| *              | **Prof. Dr. Stefan Brönnimann                          |
-| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
-+----------------+--------------------------------------------------------+
-| **             | **University of Bern, Institute of Geography, Unit     |
-| Institution:** | Climatology**                                          |
-+----------------+--------------------------------------------------------+
++-----------------------+-------------------------------------------------+
+| **Project:**          | **Bachelor thesis**                             |
++=======================+=================================================+
+| **Title:**            | **Extracting Signals of Volcanic Events from    |
+|                       | Transmission data measured by**                 |
+|                       |                                                 |
+|                       | **the Smithsonian Institution between 1902 and  |
+|                       | 1930**                                          |
++-----------------------+-------------------------------------------------+
+| **Author:**           | **Patrick Bigler                                |
+|                       | (patrick.bigler1\@stundents.unibe.ch**          |
++-----------------------+-------------------------------------------------+
+| -   \*Supervisor:\*\* | **Prof. Dr. Stefan Brönnimann                   |
+|                       | (stefan.brönnimann\@unibe.ch)**                 |
++-----------------------+-------------------------------------------------+
+| **Institution:**      | **University of Bern, Institute of Geography,   |
+|                       | Unit Climatology**                              |
++-----------------------+-------------------------------------------------+
 
 # Introduction
 
@@ -470,21 +471,18 @@ Washington.1902.1907.od
 # Zoom in (year 1903)
 Washington.1903.od <- Washington_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
-  dplyr::filter(Date > as_date('1903-01-01') & Date < as_date('1904-12-31')) |>  
+  dplyr::filter(Date > as_date('1903-01-01') & Date < as_date('1904-06-30')) |>  
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
   geom_line(aes(x = Date, y = rolling_avg, color = variable)) +
   geom_point(aes(x = Date, y = values, color = variable), alpha = 0.2) +
-  geom_vline(xintercept = as.numeric(as.Date("1902-10-24")), linetype = 'dotted') +
-  # Adapt labels
-  annotate("text", x = as.Date("1902-10-24", format = '%Y-%m-%d'),
-  y = 1.2, label= "Santa Maria [1902-10-24]", hjust = 1, vjust = -0.2, angle = 90, alpha = .5) +
   labs(x = 'Time [month]', y = 'Atmospheric optical depth [ ]') +
   scale_color_viridis_d(option = "varidis",
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
+  scale_x_date(date_breaks = "3 month", date_labels = "%b") +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
   theme(text = element_text(size = 20))  

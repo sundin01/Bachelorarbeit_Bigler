@@ -13,22 +13,24 @@ editor_options:
     wrap: 75
 ---
 
-+---------------+-------------------------------------------------------------+
-| **Project:**  | **Bachelor thesis**                                         |
-+===============+=============================================================+
-| **Title:**    | **Extracting Signals of Volcanic Events from Transmission   |
-|               | data measured by**                                          |
-|               |                                                             |
-|               | **the Smithsonian Institution between 1902 and 1930**       |
-+---------------+-------------------------------------------------------------+
-| **Author:**   | **Patrick Bigler (patrick.bigler1\@stundents.unibe.ch**     |
-+---------------+-------------------------------------------------------------+
-| **            | **Prof. Dr. Stefan Brönnimann                               |
-| Supervisor:** | (stefan.brönnimann\@unibe.ch)**                             |
-+---------------+-------------------------------------------------------------+
-| **I           | **University of Bern, Institute of Geography, Unit          |
-| nstitution:** | Climatology**                                               |
-+---------------+-------------------------------------------------------------+
++-------------------+-----------------------------------------------------+
+| **Project:**      | **Bachelor thesis**                                 |
++===================+=====================================================+
+| **Title:**        | **Extracting Signals of Volcanic Events from        |
+|                   | Transmission data measured by**                     |
+|                   |                                                     |
+|                   | **the Smithsonian Institution between 1902 and      |
+|                   | 1930**                                              |
++-------------------+-----------------------------------------------------+
+| **Author:**       | **Patrick Bigler                                    |
+|                   | (patrick.bigler1\@stundents.unibe.ch**              |
++-------------------+-----------------------------------------------------+
+| **Supervisor:**   | **Prof. Dr. Stefan Brönnimann                       |
+|                   | (stefan.brönnimann\@unibe.ch)**                     |
++-------------------+-----------------------------------------------------+
+| **I nstitution:** | **University of Bern, Institute of Geography, Unit  |
+|                   | Climatology**                                       |
++-------------------+-----------------------------------------------------+
 
 # Introduction
 
@@ -207,7 +209,7 @@ overview.plot <- ggplot() +
       legend.justification = c("right", "bottom"), legend.box.just = "right",
       legend.margin = margin(6, 6, 6, 6)) +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
-  theme(text = element_text(size = 20))   
+  theme(text = element_text(size = 12))   
 
 
 overview.plot

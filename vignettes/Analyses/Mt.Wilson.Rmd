@@ -13,23 +13,24 @@ editor_options:
     wrap: 75
 ---
 
-+----------------+--------------------------------------------------------+
-| **Project:**   | **Bachelor thesis**                                    |
-+================+========================================================+
-| **Title:**     | **Extracting Signals of Volcanic Events from           |
-|                | Transmission data measured by**                        |
-|                |                                                        |
-|                | **the Smithsonian Institution between 1902 and 1930**  |
-+----------------+--------------------------------------------------------+
-| **Author:**    | **Patrick Bigler                                       |
-|                | (patrick.bigler1\@stundents.unibe.ch**                 |
-+----------------+--------------------------------------------------------+
-| *              | **Prof. Dr. Stefan Brönnimann                          |
-| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
-+----------------+--------------------------------------------------------+
-| **             | **University of Bern, Institute of Geography, Unit     |
-| Institution:** | Climatology**                                          |
-+----------------+--------------------------------------------------------+
++-----------------------+-------------------------------------------------+
+| **Project:**          | **Bachelor thesis**                             |
++=======================+=================================================+
+| **Title:**            | **Extracting Signals of Volcanic Events from    |
+|                       | Transmission data measured by**                 |
+|                       |                                                 |
+|                       | **the Smithsonian Institution between 1902 and  |
+|                       | 1930**                                          |
++-----------------------+-------------------------------------------------+
+| **Author:**           | **Patrick Bigler                                |
+|                       | (patrick.bigler1\@stundents.unibe.ch**          |
++-----------------------+-------------------------------------------------+
+| -   \*Supervisor:\*\* | **Prof. Dr. Stefan Brönnimann                   |
+|                       | (stefan.brönnimann\@unibe.ch)**                 |
++-----------------------+-------------------------------------------------+
+| **Institution:**      | **University of Bern, Institute of Geography,   |
+|                       | Unit Climatology**                              |
++-----------------------+-------------------------------------------------+
 
 # Introduction
 
@@ -653,7 +654,7 @@ Mt.Wilson.1905.1920.od <- Mt.Wilson_long|>
 Mt.Wilson.1908.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1907-05-01') & Date < as_date('1908-12-31')) |>
+  dplyr::filter(Date > as_date('1907-06-01') & Date < as_date('1908-09-30')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -677,7 +678,7 @@ ggplot()+
 Mt.Wilson.1912.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1912-05-01') & Date < as_date('1912-12-31')) |>
+  dplyr::filter(Date > as_date('1912-06-01') & Date < as_date('1912-09-30')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -698,10 +699,14 @@ ggplot()+
 
 ################################################################################
 # Zoom in (year 1919)
+
+start <- '1919-06-01'
+end <- '1919-09-30'
+
 Mt.Wilson.1919.od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
   dplyr::filter(variable  != 'trans_900') |>    
-  dplyr::filter(Date > as_date('1919-05-01') & Date < as_date('1919-12-31')) |>
+  dplyr::filter(Date > as_date('1919-06-01') & Date < as_date('1919-09-30')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -713,6 +718,8 @@ ggplot()+
   alpha = 1), title = "Wavelength [nm]"), label = c('350', '400', '450', '500', '600',
                                                     '700', '800', '1000', '1200', '1600') ) +
   scale_y_continuous(limits = c(0, 1.2)) +
+  scale_x_date(date_breaks = "1 month", limits = as.Date(c(start, end)), 
+               expand = c(0, 0), date_labels = "%b") +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1)) +
   theme(text = element_text(size = 20))  

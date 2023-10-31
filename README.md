@@ -1,16 +1,16 @@
-+------------------+-------------------------------------------------------------------------------+
-| **Project:**     | **Bachelor thesis**                                                           |
-+==================+===============================================================================+
-| **Title:**       | **Extracting Signals of Volcanic Events from Transmission data measured by**  |
-|                  |                                                                               |
-|                  | **the Smithsonian Institution between 1902 and 1930**                         |
-+------------------+-------------------------------------------------------------------------------+
-| **Author:**      | **Patrick Bigler (patrick.bigler1\@stundents.unibe.ch**                       |
-+------------------+-------------------------------------------------------------------------------+
-| **Supervisor:**  | **Prof. Dr. Stefan Brönnimann (stefan.brönnimann\@unibe.ch)**                 |
-+------------------+-------------------------------------------------------------------------------+
-| **Institution:** | **University of Bern, Institute of Geography, Unit Climatology**              |
-+------------------+-------------------------------------------------------------------------------+
++------------------+------------------------------------------------------------------------------+
+| **Project:**     | **Bachelor thesis**                                                          |
++==================+==============================================================================+
+| **Title:**       | **Extracting Signals of Volcanic Events from Transmission data measured by** |
+|                  |                                                                              |
+|                  | **the Smithsonian Institution between 1902 and 1930**                        |
++------------------+------------------------------------------------------------------------------+
+| **Author:**      | **Patrick Bigler (patrick.bigler1\@stundents.unibe.ch**                      |
++------------------+------------------------------------------------------------------------------+
+| **Supervisor:**  | **Prof. Dr. Stefan Brönnimann (stefan.brönnimann\@unibe.ch)**                |
++------------------+------------------------------------------------------------------------------+
+| **Institution:** | **University of Bern, Institute of Geography, Unit Climatology**             |
++------------------+------------------------------------------------------------------------------+
 
 To reproduce the analysis, please follow the following instructions:
 

@@ -13,23 +13,24 @@ editor_options:
     wrap: 75
 ---
 
-+----------------+--------------------------------------------------------+
-| **Project:**   | **Bachelor thesis**                                    |
-+================+========================================================+
-| **Title:**     | **Extracting Signals of Volcanic Events from           |
-|                | Transmission data measured by**                        |
-|                |                                                        |
-|                | **the Smithsonian Institution between 1902 and 1930**  |
-+----------------+--------------------------------------------------------+
-| **Author:**    | **Patrick Bigler                                       |
-|                | (patrick.bigler1\@stundents.unibe.ch**                 |
-+----------------+--------------------------------------------------------+
-| *              | **Prof. Dr. Stefan Brönnimann                          |
-| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
-+----------------+--------------------------------------------------------+
-| **             | **University of Bern, Institute of Geography, Unit     |
-| Institution:** | Climatology**                                          |
-+----------------+--------------------------------------------------------+
++-----------------------+-------------------------------------------------+
+| **Project:**          | **Bachelor thesis**                             |
++=======================+=================================================+
+| **Title:**            | **Extracting Signals of Volcanic Events from    |
+|                       | Transmission data measured by**                 |
+|                       |                                                 |
+|                       | **the Smithsonian Institution between 1902 and  |
+|                       | 1930**                                          |
++-----------------------+-------------------------------------------------+
+| **Author:**           | **Patrick Bigler                                |
+|                       | (patrick.bigler1\@stundents.unibe.ch**          |
++-----------------------+-------------------------------------------------+
+| -   \*Supervisor:\*\* | **Prof. Dr. Stefan Brönnimann                   |
+|                       | (stefan.brönnimann\@unibe.ch)**                 |
++-----------------------+-------------------------------------------------+
+| **Institution:**      | **University of Bern, Institute of Geography,   |
+|                       | Unit Climatology**                              |
++-----------------------+-------------------------------------------------+
 
 # Introduction
 
@@ -396,7 +397,7 @@ Haraqua_Hala.1920.1925.od
 # Zoom in (year 1924)
 Haraqua_Hala.1924.od <- Haraqua_Hala_long|>
   dplyr::mutate_at(c('values'), ~-log(.))|>
-  dplyr::filter(Date > as_date('1924-01-01') & Date < as_date('1924-12-31')) |>
+  dplyr::filter(Date > as_date('1924-01-01') & Date < as_date('1924-11-30')) |>
   group_by(variable) |>
   dplyr::mutate(rolling_avg = rollmean(values, k=5, fill=NA, align='center')) |>
 ggplot()+
@@ -411,11 +412,14 @@ ggplot()+
   guide = guide_legend(override.aes = list(size = 3,
   alpha = 1), title = "Wavelength [nm]"), label = c('350' ,'398', '452', '502', '626', '724', 
                                  '817','994', '1225', '1600')) +
+  scale_x_date(date_breaks = "2 month", date_labels = "%b") +
   theme_light() +
   theme(panel.border = element_rect(colour = "black", fill = NA, linewidth = 1))+
   theme(text = element_text(size = 20))    
 
 Haraqua_Hala.1924.od 
+
+
 ```
 
 ### Boxplot
