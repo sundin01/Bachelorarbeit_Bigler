@@ -219,6 +219,8 @@ write_csv(trans_annual_mean, '../../data/od_Timeline/Mt.Wilson.od.csv')
 ################################################################################
 Mt.Wilson_od <- Mt.Wilson_long|>
   dplyr::mutate_at(c('values'), ~-log(.))
+
+
 ################################################################################
 optical_depth <- Mt.Wilson_od|>
     dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
@@ -235,6 +237,22 @@ optical_depth <- Mt.Wilson_od|>
   dplyr::filter(variable == 'trans_350' | variable == 'trans_400' | variable == 'trans_450' |
                   variable == 'trans_600' | variable == 'trans_700' 
                 | variable == 'trans_1600')
+
+stats <- Mt.Wilson_od|>
+    dplyr::filter((Date > as_date('1909-01-01') & Date < as_date('1911-01-31')) |
+                  (Date > as_date('1914-01-01') & Date < as_date('1918-01-01')))|>
+    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    group_by(variable)|>  
+    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+                                  median(., na.rm = TRUE),
+                                  mean(., na.rm = TRUE),
+                                  sd(., na.rm = TRUE),
+                                  quantile(., probs = .25, na.rm = TRUE),
+                                  quantile(., probs = .75, na.rm = TRUE),
+                                  IQR(.,na.rm = TRUE)))
+
+stats |>
+  mutate(percent = 100*(`sd`+`mean`)/`mean`)
 ################################################################################
 od_annual_mean <- Mt.Wilson_od|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 

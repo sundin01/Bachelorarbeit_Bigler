@@ -24,11 +24,12 @@ editor_options:
 | **Author:**    | **Patrick Bigler                                       |
 |                | (patrick.bigler1\@stundents.unibe.ch**                 |
 +----------------+--------------------------------------------------------+
-| *              | **Prof. Dr. Stefan Brönnimann                          |
-| *Supervisor:** | (stefan.brönnimann\@unibe.ch)**                        |
+| -   \*S        | **Prof. Dr. Stefan Brönnimann                          |
+| upervisor:\*\* | (stefan.brönnimann\@unibe.ch)**                        |
 +----------------+--------------------------------------------------------+
-| **             | **University of Bern, Institute of Geography, Unit     |
-| Institution:** | Climatology**                                          |
+|                | **University of Bern, Institute of Geography, Unit     |
+| **             | Climatology**                                          |
+| Institution:** |                                                        |
 +----------------+--------------------------------------------------------+
 
 # Introduction
@@ -175,6 +176,20 @@ optical_depth <- Montezuma_od|>
                                   IQR(.,na.rm = TRUE)))|>
   dplyr::filter(variable == 'trans_349' | variable == 'trans_395' | variable == 'trans_450' |
                   variable == 'trans_621' | variable == 'trans_714' | variable == 'trans_1593')
+
+stats <- Montezuma_od|>
+    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    group_by(variable)|>  
+    summarize_at(vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+                                  median(., na.rm = TRUE),
+                                  mean(., na.rm = TRUE),
+                                  sd(., na.rm = TRUE),
+                                  quantile(., probs = .25, na.rm = TRUE),
+                                  quantile(., probs = .75, na.rm = TRUE),
+                                  IQR(.,na.rm = TRUE)))
+
+stats |>
+  mutate(percent = 100*(`sd`+`mean`)/`mean`)
 ################################################################################
 od_annual_mean <- Montezuma_od|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 

@@ -177,6 +177,25 @@ optical_depth <- Washington_od|>
   dplyr::filter(variable == 'trans_350' | variable == 'trans_400' | variable == 'trans_450' |
                   variable == 'trans_600' | variable == 'trans_700' 
                 | variable == 'trans_1600')
+
+stats <- Washington_od|>
+    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
+    dplyr::filter(Date > as_date('1905-01-01')) |>
+    dplyr::filter(lubridate::month(Date) == 5| lubridate::month(Date) == 6| 
+                    lubridate::month(Date) == 7|  lubridate::month(Date) == 8 | 
+                    lubridate::month(Date) == 9 |lubridate::month(Date) == 10 |
+                  lubridate::month(Date) == 11) |>  
+    group_by(variable)|>  
+    summarize_at(ggplot2::vars(values), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), 
+                                  median(., na.rm = TRUE),
+                                  mean(., na.rm = TRUE),
+                                  sd(., na.rm = TRUE),
+                                  quantile(., probs = .25, na.rm = TRUE),
+                                  quantile(., probs = .75, na.rm = TRUE),
+                                  IQR(.,na.rm = TRUE)))
+stats |>
+  mutate(percent = 100*(`sd`+`mean`)/`mean`)
+
 ################################################################################
 od_annual_mean <- Washington_od|>
    dplyr::mutate(month = lubridate::month(Date, label = TRUE)) |> 
